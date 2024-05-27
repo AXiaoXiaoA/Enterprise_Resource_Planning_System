@@ -1,0 +1,213 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    padding: 40px 20px;
+    background-color: #3498db;
+    border-radius: 15px;
+    background-image: linear-gradient(to right, #3498db, #9b59b6);
+}
+
+@media (max-width: 600px) {
+    .container {
+        padding: 20px 10px;
+    }
+}
+
+.search-box {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-box > * {
+    flex: 1 1 200px;
+    min-width: 200px;
+}
+
+.age-range-input {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.separator {
+    margin: 0 5px;
+}
+
+.search-buttons {
+    flex-basis: 100%;
+    display: flex;
+    justify-content: center;  /* Center the buttons */
+    gap: 10px;
+    margin-top: 10px; /* Add some space from the inputs */
+}
+
+.table-container {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.column-names {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    font-weight: bold;
+    border-bottom: 2px solid #bdbdbd;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.column-name {
+    flex: 1;
+    text-align: center;
+    color: #2c3e50;
+}
+
+.table-wrapper {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.no-data {
+    text-align: center;
+    padding: 20px;
+    color: #7f8c8d;
+}
+
+.pagination-box {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    padding: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    color: #2c3e50;
+}
+
+.footer-buttons {
+    display: flex;
+    justify-content: center;
+}
+
+.el-pagination {
+    font-size: 12px; /* Smaller font size */
+    color: #2c3e50; /* Softer color */
+}
+
+.el-pagination .el-pager li {
+    margin: 0 5px; /* Adjust margin for smaller size */
+}
+
+.el-pagination .el-pager li.active {
+    background-color: #3498db; /* Highlighted active page with primary color */
+    color: #fff; /* White text on active page */
+    border-radius: 5px; /* Rounded corners */
+}
+
+.el-pagination .el-pager li:hover {
+    background-color: #2980b9; /* Slightly darker hover color */
+    color: #fff; /* White text on hover */
+}
+
+.el-pagination .el-icon {
+    color: #3498db; /* Softer icon color */
+}
+
+.el-pagination .el-icon:hover {
+    color: #2980b9; /* Slightly darker hover color */
+}
+
+.custom-dialog {
+    background-color: #f3f4f6;
+    border: 1px solid #e0e6ed;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    color: #2c3e50;
+    text-align: center; /* Center text and elements */
+}
+
+.custom-dialog .el-dialog__title {
+    color: #3498db;
+    font-weight: bold;
+}
+
+.custom-dialog .el-dialog__body {
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.custom-dialog .el-dialog__footer {
+    border-top: 1px solid #e0e6ed;
+    padding-top: 10px;
+}
+
+.textarea-box {
+    width: calc(100% - 14px); /* Adjust width for padding */
+    margin: auto;
+    background-color: #eef2f6;
+    color: #4a4a4a;
+    border: none;
+    border-radius: 10px;
+    padding: 7px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.el-table th {
+    background-color: #f3f4f6;
+    color: #2c3e50;
+    font-weight: bold;
+    text-align: center;
+}
+
+.el-table td {
+    color: #7f8c8d;
+    text-align: center;
+}
+
+.el-divider::before, .el-divider::after {
+    border-top: 1px solid #e0e6ed;
+}
+
+.el-button {
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    background-color: #3498db;
+    color: #ffffff;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.el-button:hover {
+    transform: scale(1.05);
+    background-color: #2980b9;
+}
+
+.el-table__row:hover {
+    background-color: #eef2f6;
+}
+
+@media (max-width: 768px) {
+    .column-names {
+        flex-wrap: wrap;
+    }
+
+    .search-box {
+        flex-direction: column;
+    }
+
+    .search-buttons {
+        justify-content: center;
+    }
+}

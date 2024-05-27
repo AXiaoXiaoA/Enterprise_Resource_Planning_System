@@ -10,7 +10,7 @@ import lombok.AllArgsConstructor;
 public class Order {
     private long orderNumber;
     private String department;
-    private long creatorEmployeeId;
+    private long creatorUserId;
     private java.util.Date creationDate;
 
     private String productName;

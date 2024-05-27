@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.changing.erpsystembackend.mapper.UserMapper">
+    <!-- login and register -->
+    <select id="selectEmployee" parameterType="com.changing.erpsystembackend.entity.User" resultType="com.changing.erpsystembackend.entity.User">
+        SELECT *
+        FROM USERS
+        WHERE TEL = #{tel} AND PASSWORD = #{password}
+    </select>
+
+    <insert id="insertEmployee" parameterType="com.changing.erpsystembackend.entity.User">
+        INSERT INTO USERS (ID, NAME, GENDER, AGE, DEPARTMENT, POSITION, RESUME, STATUS)
+        VALUES (USER_ID_SEQ.NEXTVAL, #{name}, #{gender}, CAST(#{age} AS INTEGER), #{department}, #{position}, #{resume,jdbcType=CLOB}, #{status})
+    </insert>
+
+    <!-- personnel-Home -->
+    <select id="getEmployeeDistribution" resultType="int">
+        SELECT COUNT(*) AS count
+        FROM USERS
+        WHERE status = 'join'
+    </select>
+
+    <select id="getAgeDistribution" resultType="java.util.Map">
+        SELECT COUNT(*) AS count, FLOOR(age / 5) * 5 AS age_bracket
+        FROM USERS
+        WHERE status = 'join'
+        GROUP BY FLOOR(age / 5) * 5
+        ORDER BY age_bracket
+    </select>
+
+    <select id="getDepartmentDistribution" resultType="java.util.Map">
+        SELECT department, COUNT(*) AS count
+        FROM USERS
+        WHERE status = 'join'
+        GROUP BY department
+    </select>
+
+    <select id="getApplyDistribution" resultType="int">
+        SELECT COUNT(*) AS count
+        FROM USERS
+        WHERE status = 'apply'
+    </select>
+
+    <!-- personnel-ApplyCheck -->
+    <select id="searchAllApply" resultType="com.changing.erpsystembackend.entity.User">
+        SELECT id, name, gender, age, department, position, status
+        FROM USERS
+        WHERE status = 'apply'
+    </select>
+
+        <select id="searchApply" resultType="com.changing.erpsystembackend.entity.User">
+            SELECT * FROM USERS
+            WHERE 1=1
+            <if test="searchCriteria.id != null and searchCriteria.id != ''">
+                AND id = #{searchCriteria.id}
+            </if>
+            <if test="searchCriteria.name != null and searchCriteria.name != ''">
+                AND name LIKE '%' || #{searchCriteria.name} || '%'
+            </if>
+            <if test="searchCriteria.department != null and searchCriteria.department != ''">
+                AND department = #{searchCriteria.department}
+            </if>
+            <if test="searchCriteria.position != null and searchCriteria.position != ''">
+                AND position = #{searchCriteria.position}
+            </if>
+            <if test="searchCriteria.ageStart != null and searchCriteria.ageStart != ''">
+                AND age >= #{searchCriteria.ageStart}
+            </if>
+            <if test="searchCriteria.ageEnd != null and searchCriteria.ageEnd != ''">
+                AND age &lt;= #{searchCriteria.ageEnd}
+            </if>
+            <if test="searchCriteria.gender != null and searchCriteria.gender != ''">
+                AND gender = #{searchCriteria.gender}
+            </if>
+            <if test="searchCriteria.status == null and searchCriteria.status == ''">
+                AND status = 'apply'
+            </if>
+            <if test="searchCriteria.status == 'apply'">
+                AND status = 'apply'
+            </if>
+            <if test="searchCriteria.status == 'reject'">
+                AND (status = 'apply' OR status = 'reject')
+            </if>
+        </select>
+
+    <select id="searchResumeById" resultType="java.lang.String">
+        SELECT resume
+        FROM USERS
+        WHERE id = #{id}
+    </select>
+
+    <update id="acceptApply" parameterType="com.changing.erpsystembackend.entity.User">
+        UPDATE USERS
+        SET status = 'join'
+        WHERE id = #{id}
+    </update>
+
+    <update id="rejectApply" parameterType="com.changing.erpsystembackend.entity.User">
+        UPDATE USERS
+        SET status = 'reject'
+        WHERE id = #{id}
+    </update>
+
+    <!-- personnel-EmployeeManage -->
+    <select id="searchAllEmployee" resultType="com.changing.erpsystembackend.entity.User">
+        SELECT id, name, gender, age, department, position, status
+        FROM USERS
+        WHERE status = 'join'
+    </select>
+
+    <select id="searchEmployee" resultType="com.changing.erpsystembackend.entity.User">
+        SELECT * FROM USERS
+        WHERE 1=1
+        <if test="searchCriteria.id != null and searchCriteria.id != ''">
+            AND id = #{searchCriteria.id}
+        </if>
+        <if test="searchCriteria.name != null and searchCriteria.name != ''">
+            AND name LIKE '%' || #{searchCriteria.name} || '%'
+        </if>
+        <if test="searchCriteria.department != null and searchCriteria.department != ''">
+            AND department = #{searchCriteria.department}
+        </if>
+        <if test="searchCriteria.position != null and searchCriteria.position != ''">
+            AND position = #{searchCriteria.position}
+        </if>
+        <if test="searchCriteria.ageStart != null and searchCriteria.ageStart != ''">
+            AND age >= #{searchCriteria.ageStart}
+        </if>
+        <if test="searchCriteria.ageEnd != null and searchCriteria.ageEnd != ''">
+            AND age &lt;= #{searchCriteria.ageEnd}
+        </if>
+        <if test="searchCriteria.gender != null and searchCriteria.gender != ''">
+            AND gender = #{searchCriteria.gender}
+        </if>
+        <if test="searchCriteria.status == null and searchCriteria.status == ''">
+            AND status = 'join'
+        </if>
+        <if test="searchCriteria.status == 'join'">
+            AND status = 'join'
+        </if>
+        <if test="searchCriteria.status == 'resign'">
+            AND (status = 'join' OR status = 'resign')
+        </if>
+    </select>
+</mapper>
