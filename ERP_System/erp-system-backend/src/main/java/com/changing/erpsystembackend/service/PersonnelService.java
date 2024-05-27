@@ -1,7 +1,7 @@
 package com.changing.erpsystembackend.service;
 
-import com.changing.erpsystembackend.entity.User;
-import com.changing.erpsystembackend.mapper.UserMapper;
+import com.changing.erpsystembackend.entity.Employee;
+import com.changing.erpsystembackend.mapper.EmployeeMapper;
 
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
@@ -14,31 +14,31 @@ import java.util.Map;
 @Service
 public class PersonnelService {
     @Resource
-    UserMapper userMapper;
+    EmployeeMapper employeeMapper;
 
     // Home
     public int getEmployeeDistribution() {
-        return userMapper.getEmployeeDistribution();
+        return employeeMapper.getEmployeeDistribution();
     }
     public List<Map<String, Object>> getAgeDistribution() {
-        return userMapper.getAgeDistribution();
+        return employeeMapper.getAgeDistribution();
     }
     public List<Map<String, Object>> getDepartmentDistribution() {
-        return userMapper.getDepartmentDistribution();
+        return employeeMapper.getDepartmentDistribution();
     }
     public int getApplyDistribution() {
-        return userMapper.getApplyDistribution();
+        return employeeMapper.getApplyDistribution();
     }
 
     // ApplyCheck
-    public List<User> searchAllApply(){
-        return userMapper.searchAllApply();
+    public List<Employee> searchAllApply(){
+        return employeeMapper.searchAllApply();
     }
-    public List<User> searchApply(Map<String, String> searchCriteria) {
-        return userMapper.searchApply(searchCriteria);
+    public List<Employee> searchApply(Map<String, String> searchCriteria) {
+        return employeeMapper.searchApply(searchCriteria);
     }
     public String searchResume(int selectedId){
-        return userMapper.searchResumeById(selectedId);
+        return employeeMapper.searchResumeById(selectedId);
     }
     public String executePythonScript(String text) {
         String scriptPath = "D:\\陆\\大创\\test.py";
@@ -67,17 +67,17 @@ public class PersonnelService {
         }
     }
     public boolean acceptApply(int selectedId) {
-        return userMapper.acceptApply(selectedId);
+        return employeeMapper.acceptApply(selectedId);
     }
     public boolean rejectApply(int selectedId) {
-        return userMapper.rejectApply(selectedId);
+        return employeeMapper.rejectApply(selectedId);
     }
 
     // EmployeeManage
-    public List<User> searchAllEmployee() {
-        return userMapper.searchAllEmployee();
+    public List<Employee> searchAllEmployee() {
+        return employeeMapper.searchAllEmployee();
     }
-    public List<User> searchEmployee(Map<String, String> searchCriteria) {
-        return userMapper.searchEmployee(searchCriteria);
+    public List<Employee> searchEmployee(Map<String, String> searchCriteria) {
+        return employeeMapper.searchEmployee(searchCriteria);
     }
 }

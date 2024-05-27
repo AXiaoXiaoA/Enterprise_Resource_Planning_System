@@ -5,13 +5,13 @@
       <div class="box">
         <div class="title">入 职 申 请</div>
         <el-form :model="data.form" ref="formRef" :rules="rules">
-          <el-form-item label="您的名字是？" prop="name">
+          <el-form-item label="姓名" prop="name">
             <el-input prefix-icon="User" v-model="data.form.name" placeholder="姓名"/>
           </el-form-item>
-          <el-form-item label="您的年龄是？" prop="age">
-            <el-input v-model="data.form.age" placeholder="年龄" />
+          <el-form-item label="身份证号" prop="id">
+            <el-input v-model="data.form.id" placeholder="身份证号"/>
           </el-form-item>
-          <el-form-item label="您的性别是？" prop="gender">
+          <el-form-item label="性别" prop="gender">
             <div class="mb-2 flex items-center text-sm">
               <el-radio-group v-model="data.form.gender" class="ml-4">
                 <el-radio class="male-color" label="male" size="large">男</el-radio>
@@ -19,7 +19,25 @@
               </el-radio-group>
             </div>
           </el-form-item>
-          <el-form-item label="您希望申请什么部门？" prop="department">
+          <el-form-item label="民族" prop="nationality">
+            <el-input v-model="data.form.nationality" placeholder="民族"/>
+          </el-form-item>
+          <el-form-item label="出生日期" prop="birthday">
+            <el-date-picker v-model="data.form.birthday" placeholder="生日" type="date" />
+          </el-form-item>
+          <el-form-item label="出生地" prop="birthplace">
+            <el-input v-model="data.form.birthplace" placeholder="出生地"/>
+          </el-form-item>
+          <el-form-item label="政治面貌" prop="politicalStatus">
+            <el-input v-model="data.form.politicalStatus" placeholder="政治面貌"/>
+          </el-form-item>
+          <el-form-item label="联系方式" prop="tel">
+            <el-input v-model="data.form.tel" placeholder="联系方式"/>
+          </el-form-item>
+          <el-form-item label="电子邮件" prop="email">
+            <el-input v-model="data.form.email" placeholder="电子邮件"/>
+          </el-form-item>
+          <el-form-item label="申请部门" prop="department">
             <el-select v-model="data.form.department" placeholder="部门">
               <el-option label="销售部" value="sales"/>
               <el-option label="仓储部" value="repo"/>
@@ -28,7 +46,7 @@
               <el-option label="采购部" value="purchase"/>
             </el-select>
           </el-form-item>
-          <el-form-item label="您希望申请什么岗位？" prop="position">
+          <el-form-item label="申请岗位" prop="position">
             <el-select v-model="data.form.position" placeholder="岗位">
               <el-option label="总经理" value="manager"/>
               <el-option label="普通职员" value="worker"/>
@@ -59,13 +77,58 @@ import LoginBackground from '../../components/LoginBG.vue';
 const data = reactive({
   form: {
     name: '',
+    id: '',
     gender: '',
-    age:'',
-    position: '',
+    nationality: '',
+    birthday: '',
+    birthplace: '',
+    politicalStatus: '',
+    tel:'',
+    email: '',
     department: '',
+    position: '',
     resume: null,
     fileList: []
   }
+});
+
+const rules = reactive({
+  name: [
+    {required: true, message: '请输入您的姓名', trigger: 'blur'},
+  ],
+  id: [
+    {required: true, message: '请输入您的身份证号码', trigger: 'blur'},
+  ],
+  gender: [
+    {required: true, message: '请选择您的性别', trigger: 'change'}
+  ],
+  nationality: [
+    {required: true, message: '请输入您的民族', trigger: 'blur'}
+  ],
+  birthday: [
+    {required: true, type: 'date', message: '请选择您的生日', trigger: 'change'}
+  ],
+  birthplace: [
+    {required: true, message: '请输入您的出生地', trigger: 'blur'}
+  ],
+  politicalStatus: [
+    {required: true, message: '请输入您的政治面貌', trigger: 'blur'}
+  ],
+  tel: [
+    {required: true, message: '请输入有效的电话号码', trigger: 'blur'}
+  ],
+  email: [
+    {required: true, type: 'email', message: '请输入有效的电子邮件地址', trigger: 'blur'}
+  ],
+  department: [
+    {required: true, message: '请选择应聘部门', trigger: 'change'}
+  ],
+  position: [
+    {required: true, message: '请选择应聘职位', trigger: 'change'}
+  ],
+  resume: [
+    {required: true, message: '请上传您的简历', trigger: 'change'}
+  ]
 });
 
 const handleFileChange = (file) => {
@@ -73,7 +136,6 @@ const handleFileChange = (file) => {
     data.form.resume = file.raw;
   }
 };
-
 const beforeUpload = (file) => {
   const isLt2M = file.size / 1024 / 1024 < 2;
   if (!isLt2M) {
@@ -83,37 +145,29 @@ const beforeUpload = (file) => {
   return true;
 };
 
-const rules = reactive({
-  name: [
-    {required: true, message: '我们希望知道您的名字', trigger: 'blur'},
-  ],
-  gender: [
-    {required: true, trigger: 'change'}
-  ],
-  age:[
-    {required: true,trigger:'change'}
-  ],
-  position: [
-    {required: true, trigger: 'change'}
-  ],
-  department: [
-    {required: true, trigger: 'change'}
-  ]
-});
-
 const formRef = ref();
-
+const formatDate = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
 const register = () => {
   if (formRef.value.validate()) {
     let EmployeeApply = new FormData();
     EmployeeApply.append('name', data.form.name);
+    EmployeeApply.append('id', data.form.id);
     EmployeeApply.append('gender', data.form.gender);
-    EmployeeApply.append('age', data.form.age);
-    EmployeeApply.append('position', data.form.position);
+    EmployeeApply.append('nationality', data.form.nationality);
+    const formattedBirthday = formatDate(data.form.birthday);
+    EmployeeApply.append('birthday', formattedBirthday);
+    EmployeeApply.append('birthplace', data.form.birthplace);
+    EmployeeApply.append('politicalStatus', data.form.politicalStatus);
+    EmployeeApply.append('tel', data.form.tel);
+    EmployeeApply.append('email', data.form.email);
     EmployeeApply.append('department', data.form.department);
-    if (data.form.resume) {
-      EmployeeApply.append('resume', data.form.resume);
-    }
+    EmployeeApply.append('position', data.form.position);
+    EmployeeApply.append('resume', data.form.resume);
 
     axios.post('/api/register', EmployeeApply, {
       headers: {

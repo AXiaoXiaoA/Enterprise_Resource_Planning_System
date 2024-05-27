@@ -2,17 +2,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.changing.erpsystembackend.mapper.UserMapper">
+<mapper namespace="com.changing.erpsystembackend.mapper.EmployeeMapper">
     <!-- login and register -->
-    <select id="selectEmployee" parameterType="com.changing.erpsystembackend.entity.User" resultType="com.changing.erpsystembackend.entity.User">
-        SELECT *
-        FROM USERS
-        WHERE TEL = #{tel} AND PASSWORD = #{password}
+    <select id="findByTelAndPassword" parameterType="map" resultType="com.changing.erpsystembackend.entity.Employee">
+        SELECT e.*
+        FROM "Employee" e
+                 JOIN "PersonalInformation" p ON e.PERSON_ID = p.ID
+        WHERE p.TEL = #{tel} AND e.PASSWORD = #{password}
     </select>
 
-    <insert id="insertEmployee" parameterType="com.changing.erpsystembackend.entity.User">
-        INSERT INTO USERS (ID, NAME, GENDER, AGE, DEPARTMENT, POSITION, RESUME, STATUS)
-        VALUES (USER_ID_SEQ.NEXTVAL, #{name}, #{gender}, CAST(#{age} AS INTEGER), #{department}, #{position}, #{resume,jdbcType=CLOB}, #{status})
+    <insert id="insertEmployee" parameterType="com.changing.erpsystembackend.entity.Employee">
+        INSERT INTO "Employee" (ID, DEPARTMENT, POSITION, STARTDATE, STATUS, RESUME, PERSON_ID)
+        VALUES (EMPLOYEE_ID_SEQ.NEXTVAL, #{department}, #{position}, #{startDate}, #{status}, #{resume,jdbcType=CLOB}, #{personId})
     </insert>
 
     <!-- personnel-Home -->
@@ -44,13 +45,13 @@
     </select>
 
     <!-- personnel-ApplyCheck -->
-    <select id="searchAllApply" resultType="com.changing.erpsystembackend.entity.User">
+    <select id="searchAllApply" resultType="com.changing.erpsystembackend.entity.Employee">
         SELECT id, name, gender, age, department, position, status
         FROM USERS
         WHERE status = 'apply'
     </select>
 
-        <select id="searchApply" resultType="com.changing.erpsystembackend.entity.User">
+        <select id="searchApply" resultType="com.changing.erpsystembackend.entity.Employee">
             SELECT * FROM USERS
             WHERE 1=1
             <if test="searchCriteria.id != null and searchCriteria.id != ''">
@@ -91,26 +92,26 @@
         WHERE id = #{id}
     </select>
 
-    <update id="acceptApply" parameterType="com.changing.erpsystembackend.entity.User">
+    <update id="acceptApply" parameterType="com.changing.erpsystembackend.entity.Employee">
         UPDATE USERS
         SET status = 'join'
         WHERE id = #{id}
     </update>
 
-    <update id="rejectApply" parameterType="com.changing.erpsystembackend.entity.User">
+    <update id="rejectApply" parameterType="com.changing.erpsystembackend.entity.Employee">
         UPDATE USERS
         SET status = 'reject'
         WHERE id = #{id}
     </update>
 
     <!-- personnel-EmployeeManage -->
-    <select id="searchAllEmployee" resultType="com.changing.erpsystembackend.entity.User">
+    <select id="searchAllEmployee" resultType="com.changing.erpsystembackend.entity.Employee">
         SELECT id, name, gender, age, department, position, status
         FROM USERS
         WHERE status = 'join'
     </select>
 
-    <select id="searchEmployee" resultType="com.changing.erpsystembackend.entity.User">
+    <select id="searchEmployee" resultType="com.changing.erpsystembackend.entity.Employee">
         SELECT * FROM USERS
         WHERE 1=1
         <if test="searchCriteria.id != null and searchCriteria.id != ''">
