@@ -66,11 +66,11 @@ public class PersonnelService {
             return "Error during script execution: " + e.getMessage();
         }
     }
-    public boolean acceptApply(int selectedId) {
-        return employeeMapper.acceptApply(selectedId);
+    public boolean acceptApply(int id) {
+        return employeeMapper.acceptApply(id);
     }
-    public boolean rejectApply(int selectedId) {
-        return employeeMapper.rejectApply(selectedId);
+    public boolean rejectApply(int id) {
+        return employeeMapper.rejectApply(id);
     }
 
     // EmployeeManage

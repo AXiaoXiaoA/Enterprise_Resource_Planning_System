@@ -19,4 +19,5 @@ public class Employee {
     private String status;
     private String resume;
     private String personId;
+    private PersonalInformation personalInformation;
 }

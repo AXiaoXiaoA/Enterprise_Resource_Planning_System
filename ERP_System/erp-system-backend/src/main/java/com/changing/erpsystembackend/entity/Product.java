@@ -12,5 +12,7 @@ public class Product {
     private String name;
     private Double price;
     private Integer inventory;
+    private Integer remaining;
     private Long materialId;
+    private Integer materialConsume;
 }

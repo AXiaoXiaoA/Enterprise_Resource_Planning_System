@@ -1,13 +1,3 @@
-<script setup>
-import { useRoute } from 'vue-router'
-const defaultAvatar = 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
-const employee = JSON.parse(localStorage.getItem('employee') || '{}')
-const $route = useRoute()
-const logout = () => {
-  localStorage.removeItem('employee')
-}
-</script>
-
 <template>
   <div>
     <div class="header">
@@ -71,5 +61,15 @@ const logout = () => {
     </div>
   </div>
 </template>
+
+<script setup>
+import { useRoute } from 'vue-router'
+const defaultAvatar = 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
+const employee = JSON.parse(localStorage.getItem('employee') || '{}')
+const $route = useRoute()
+const logout = () => {
+  localStorage.removeItem('employee')
+}
+</script>
 
 <style lang="scss" scoped src="@/styles/homepage.css"></style>

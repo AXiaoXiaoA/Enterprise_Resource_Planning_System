@@ -1,6 +1,5 @@
 package com.changing.erpsystembackend.controller;
 
-import com.changing.erpsystembackend.common.IntRequest;
 import com.changing.erpsystembackend.common.Result;
 import com.changing.erpsystembackend.common.StringRequest;
 import com.changing.erpsystembackend.service.PersonnelService;
@@ -44,8 +43,8 @@ public class PersonnelController {
 		return Result.success(personnelService.searchApply(searchCriteria));
 	}
 	@GetMapping("/searchResume")
-	public Result searchResume(IntRequest intRequest) {
-		return Result.success(personnelService.searchResume(intRequest.getId()));
+	public Result searchResume(@RequestParam("id") int id) {
+		return Result.success(personnelService.searchResume(id));
 	}
 	@PostMapping("/analysis")
 	public Result outWroughtIron(@RequestBody StringRequest requestText){
@@ -59,18 +58,16 @@ public class PersonnelController {
 		}
 	}
 	@PostMapping("/acceptApply")
-	public Result accept(@RequestBody IntRequest intRequest){
-		int selectedId = intRequest.getId();
-		if(personnelService.acceptApply(selectedId)){
+	public Result accept(@RequestParam("id") int id){
+		if(personnelService.acceptApply(id)){
 			return Result.success();
 		}else{
 			return Result.error("雇佣失败");
 		}
 	}
 	@PostMapping("/rejectApply")
-	public Result reject(@RequestBody IntRequest intRequest){
-		int selectedId = intRequest.getId();
-		if(personnelService.rejectApply(selectedId)){
+	public Result reject(@RequestParam("id") int id){
+		if(personnelService.rejectApply(id)){
 			return Result.success();
 		}else{
 			return Result.error("雇佣失败");

@@ -201,7 +201,7 @@ onMounted(async () => {
     const departmentNameMap = {
       'personnel': '人事部',
       'repo': '仓储部',
-      'purchase': '采购部',
+      'purchasing': '采购部',
       'sales': '销售部',
       'production': '生产部'
     };

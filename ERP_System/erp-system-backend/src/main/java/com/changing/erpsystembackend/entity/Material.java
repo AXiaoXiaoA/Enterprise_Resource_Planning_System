@@ -12,4 +12,5 @@ public class Material {
     private String name;
     private Double price;
     private Integer inventory;
+    private Integer remaining;
 }

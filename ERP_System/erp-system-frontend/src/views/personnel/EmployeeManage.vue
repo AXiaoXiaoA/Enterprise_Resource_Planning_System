@@ -8,7 +8,7 @@
         <el-option label="仓储部" value="repo"></el-option>
         <el-option label="人事部" value="personnel"></el-option>
         <el-option label="生产部" value="production"></el-option>
-        <el-option label="采购部" value="purchase"></el-option>
+        <el-option label="采购部" value="purchasing"></el-option>
       </el-select>
       <el-select placeholder="请选择员工职务" v-model="searchCriteria.position">
         <el-option label="总经理" value="manager"></el-option>
@@ -80,7 +80,7 @@ const departmentMap = {
   repo: '仓储部',
   personnel: '人事部',
   production: '生产部',
-  purchase: '采购部'
+  purchasing: '采购部'
 };
 const positionMap = {
   manager: '总经理',
@@ -99,11 +99,13 @@ const loadData = (page = 1) => {
       .then(response => {
         const res = response.data;
         tableData.items = res.data.map(item => ({
-          ...item,
-          gender: genderMap[item.gender] || item.gender,
+          id: item.id,
+          name: item.personalInformation.name,
+          gender: genderMap[item.personalInformation.gender] || item.personalInformation.gender,
+          age: new Date().getFullYear() - new Date(item.personalInformation.birthday).getFullYear(),
           department: departmentMap[item.department] || item.department,
           position: positionMap[item.position] || item.position,
-          status: statusMap[item.status] || item.status
+          status: statusMap[item.status] || item.status,
         }));
       })
       .catch(error => {
@@ -128,11 +130,13 @@ const search = () => {
       .then(response => {
         const res = response.data;
         tableData.items = res.data.map(item => ({
-          ...item,
-          gender: genderMap[item.gender] || item.gender,
+          id: item.id,
+          name: item.personalInformation.name,
+          gender: genderMap[item.personalInformation.gender] || item.personalInformation.gender,
+          age: new Date().getFullYear() - new Date(item.personalInformation.birthday).getFullYear(),
           department: departmentMap[item.department] || item.department,
           position: positionMap[item.position] || item.position,
-          status: statusMap[item.status] || item.status
+          status: statusMap[item.status] || item.status,
         }));
       })
       .catch(error => {

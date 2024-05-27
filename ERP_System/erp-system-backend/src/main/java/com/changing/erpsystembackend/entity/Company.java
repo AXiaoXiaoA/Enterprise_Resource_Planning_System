@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Customer {
+public class Company {
     private Long id;
     private String name;
     private Long tel;

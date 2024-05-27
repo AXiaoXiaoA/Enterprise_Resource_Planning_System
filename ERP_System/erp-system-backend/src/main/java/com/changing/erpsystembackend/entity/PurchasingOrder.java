@@ -12,9 +12,11 @@ import java.sql.Date;
 public class PurchasingOrder {
     private Long id;
     private Long materialId;
-    private Long employeeId;
+    private Long purchasingEmployeeId;
+    private Long repoEmployeeId;
     private Integer quantity;
     private byte[] contract;
     private Date applyDate;
     private Long customerId;
+    private String status;
 }

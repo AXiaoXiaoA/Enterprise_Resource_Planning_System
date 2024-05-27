@@ -28,8 +28,8 @@ public interface EmployeeMapper {
     List<Employee> searchApply(@Param("searchCriteria") Map<String, String> searchCriteria);
     @Results({@Result(column = "resume", property = "resume", jdbcType = JdbcType.CLOB, typeHandler = ClobTypeHandler.class)})
     String searchResumeById(int id);
-    boolean acceptApply(int id);
-    boolean rejectApply(int id);
+    boolean acceptApply(@Param("id") int id);
+    boolean rejectApply(@Param("id") int id);
 
     // personnel-EmployeeManage
     List<Employee> searchAllEmployee();

@@ -8,7 +8,7 @@
         <el-option label="仓储部" value="repo"></el-option>
         <el-option label="人事部" value="personnel"></el-option>
         <el-option label="生产部" value="production"></el-option>
-        <el-option label="采购部" value="purchase"></el-option>
+        <el-option label="采购部" value="purchasing"></el-option>
       </el-select>
       <el-select placeholder="请选择申请职务" v-model="searchCriteria.position">
         <el-option label="总经理" value="manager"></el-option>
@@ -97,13 +97,14 @@ const columns = [
   { prop: 'department', label: '申请部门', align: 'center' },
   { prop: 'position', label: '申请职务', align: 'center' },
   { prop: 'status', label: '求职状态', align: 'center' },
+  { prop: 'applyDate', label: '投递时间', align: 'center' },
 ];
 const departmentMap = {
   sales: '销售部',
   repo: '仓储部',
   personnel: '人事部',
   production: '生产部',
-  purchase: '采购部'
+  purchasing: '采购部'
 };
 const positionMap = {
   manager: '总经理',
@@ -122,11 +123,14 @@ const loadData = (page = 1) => {
       .then(response => {
         const res = response.data;
         tableData.items = res.data.map(item => ({
-          ...item,
-          gender: genderMap[item.gender] || item.gender,
+          id: item.id,
+          name: item.personalInformation.name,
+          gender: genderMap[item.personalInformation.gender] || item.personalInformation.gender,
+          age: new Date().getFullYear() - new Date(item.personalInformation.birthday).getFullYear(),
           department: departmentMap[item.department] || item.department,
           position: positionMap[item.position] || item.position,
           status: statusMap[item.status] || item.status,
+          applyDate: item.startDate,
         }));
       })
       .catch(error => {
@@ -151,11 +155,14 @@ const search = () => {
       .then(response => {
         const res = response.data;
         tableData.items = res.data.map(item => ({
-          ...item,
-          gender: genderMap[item.gender] || item.gender,
+          id: item.id,
+          name: item.personalInformation.name,
+          gender: genderMap[item.personalInformation.gender] || item.personalInformation.gender,
+          age: new Date().getFullYear() - new Date(item.personalInformation.birthday).getFullYear(),
           department: departmentMap[item.department] || item.department,
           position: positionMap[item.position] || item.position,
           status: statusMap[item.status] || item.status,
+          applyDate: item.startDate,
         }));
       })
       .catch(error => {
@@ -227,23 +234,25 @@ const getFavor = () => {
 
 // 聘用员工
 const acceptApply = ()=>{
-  axios.post('/api/personnel/acceptApply',{id:selectedId.value}).then(res=>{
-    if(res.data.code==='200'){
-      ElMessage.success('聘用成功');
-      loadData();
-    }else{
-      ElMessage.error('聘用失败');
-    }
+  axios.post('/api/personnel/acceptApply',null,{ params: { id: selectedId.value } })
+      .then(res=>{
+        if(res.data.code==='200'){
+          ElMessage.success('聘用成功');
+          loadData();
+        }else{
+          ElMessage.error('聘用失败');
+        }
   })
 }
 const rejectApply = ()=>{
-  axios.post('/api/personnel/rejectApply',{id:selectedId.value}).then(res=>{
-    if(res.data.code==='200'){
-      ElMessage.success('拒绝成功');
-      loadData();
-    }else{
-      ElMessage.error('拒绝失败');
-    }
+  axios.post('/api/personnel/rejectApply',null,{ params: { id: selectedId.value } })
+      .then(res=>{
+        if(res.data.code==='200'){
+          ElMessage.success('拒绝成功');
+          loadData();
+        }else{
+          ElMessage.error('拒绝失败');
+        }
   })
 }
 

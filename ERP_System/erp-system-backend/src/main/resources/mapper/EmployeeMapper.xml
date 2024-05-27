@@ -3,11 +3,33 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.changing.erpsystembackend.mapper.EmployeeMapper">
+    <resultMap id="EmployeeResultMap" type="com.changing.erpsystembackend.entity.Employee">
+        <id column="employee_id" property="id"/>
+        <result column="PASSWORD" property="password"/>
+        <result column="DEPARTMENT" property="department"/>
+        <result column="POSITION" property="position"/>
+        <result column="STARTDATE" property="startDate"/>
+        <result column="ENDDATE" property="endDate"/>
+        <result column="STATUS" property="status"/>
+        <result column="RESUME" property="resume"/>
+        <result column="PERSON_ID" property="personId"/>
+        <association property="personalInformation" javaType="com.changing.erpsystembackend.entity.PersonalInformation">
+            <id column="personalInformation_id" property="id"/>
+            <result column="NAME" property="name"/>
+            <result column="GENDER" property="gender"/>
+            <result column="NATIONALITY" property="nationality"/>
+            <result column="BIRTHDAY" property="birthday"/>
+            <result column="BIRTHPLACE" property="birthplace"/>
+            <result column="POLITICALSTATUS" property="politicalStatus"/>
+            <result column="TEL" property="tel"/>
+            <result column="EMAIL" property="email"/>
+        </association>
+    </resultMap>
+
     <!-- login and register -->
     <select id="findByTelAndPassword" parameterType="map" resultType="com.changing.erpsystembackend.entity.Employee">
         SELECT e.*
-        FROM "Employee" e
-                 JOIN "PersonalInformation" p ON e.PERSON_ID = p.ID
+        FROM "Employee" e LEFT JOIN "PersonalInformation" p ON e.PERSON_ID = p.ID
         WHERE p.TEL = #{tel} AND e.PASSWORD = #{password}
     </select>
 
@@ -19,123 +41,135 @@
     <!-- personnel-Home -->
     <select id="getEmployeeDistribution" resultType="int">
         SELECT COUNT(*) AS count
-        FROM USERS
+        FROM "Employee"
         WHERE status = 'join'
     </select>
 
     <select id="getAgeDistribution" resultType="java.util.Map">
-        SELECT COUNT(*) AS count, FLOOR(age / 5) * 5 AS age_bracket
-        FROM USERS
-        WHERE status = 'join'
-        GROUP BY FLOOR(age / 5) * 5
+        SELECT COUNT(*) AS count, FLOOR(MONTHS_BETWEEN(SYSDATE, BIRTHDAY) / 12 / 5) * 5 AS age_bracket
+        FROM "PersonalInformation" p
+            JOIN "Employee" e ON p.ID = e.PERSON_ID
+        WHERE e.STATUS = 'join'
+        GROUP BY FLOOR(MONTHS_BETWEEN(SYSDATE, BIRTHDAY) / 12 / 5) * 5
         ORDER BY age_bracket
     </select>
 
+
     <select id="getDepartmentDistribution" resultType="java.util.Map">
         SELECT department, COUNT(*) AS count
-        FROM USERS
+        FROM "Employee"
         WHERE status = 'join'
         GROUP BY department
     </select>
 
     <select id="getApplyDistribution" resultType="int">
         SELECT COUNT(*) AS count
-        FROM USERS
+        FROM "Employee"
         WHERE status = 'apply'
     </select>
 
     <!-- personnel-ApplyCheck -->
-    <select id="searchAllApply" resultType="com.changing.erpsystembackend.entity.Employee">
-        SELECT id, name, gender, age, department, position, status
-        FROM USERS
-        WHERE status = 'apply'
+    <select id="searchAllApply" resultMap="EmployeeResultMap">
+        SELECT
+            e.ID as employee_id, e.PASSWORD, e.DEPARTMENT, e.POSITION, e.STARTDATE, e.ENDDATE, e.STATUS, e.RESUME, e.PERSON_ID,
+            p.ID as personalInformation_id, p.NAME, p.GENDER, p.NATIONALITY, p.BIRTHDAY, p.BIRTHPLACE, p.POLITICALSTATUS, p.TEL, p.EMAIL
+        FROM "Employee" e LEFT JOIN "PersonalInformation" p ON e.PERSON_ID = p.ID
+        WHERE e.STATUS = 'apply'
     </select>
 
-        <select id="searchApply" resultType="com.changing.erpsystembackend.entity.Employee">
-            SELECT * FROM USERS
-            WHERE 1=1
-            <if test="searchCriteria.id != null and searchCriteria.id != ''">
-                AND id = #{searchCriteria.id}
-            </if>
-            <if test="searchCriteria.name != null and searchCriteria.name != ''">
-                AND name LIKE '%' || #{searchCriteria.name} || '%'
-            </if>
-            <if test="searchCriteria.department != null and searchCriteria.department != ''">
-                AND department = #{searchCriteria.department}
-            </if>
-            <if test="searchCriteria.position != null and searchCriteria.position != ''">
-                AND position = #{searchCriteria.position}
-            </if>
-            <if test="searchCriteria.ageStart != null and searchCriteria.ageStart != ''">
-                AND age >= #{searchCriteria.ageStart}
-            </if>
-            <if test="searchCriteria.ageEnd != null and searchCriteria.ageEnd != ''">
-                AND age &lt;= #{searchCriteria.ageEnd}
-            </if>
-            <if test="searchCriteria.gender != null and searchCriteria.gender != ''">
-                AND gender = #{searchCriteria.gender}
-            </if>
-            <if test="searchCriteria.status == null and searchCriteria.status == ''">
-                AND status = 'apply'
-            </if>
-            <if test="searchCriteria.status == 'apply'">
-                AND status = 'apply'
-            </if>
-            <if test="searchCriteria.status == 'reject'">
-                AND (status = 'apply' OR status = 'reject')
-            </if>
-        </select>
+    <select id="searchApply" resultMap="EmployeeResultMap">
+        SELECT
+            e.ID as employee_id, e.PASSWORD, e.DEPARTMENT, e.POSITION, e.STARTDATE, e.ENDDATE, e.STATUS, e.RESUME, e.PERSON_ID,
+            p.ID as personalInformation_id, p.NAME, p.GENDER, p.NATIONALITY, p.BIRTHDAY, p.BIRTHPLACE, p.POLITICALSTATUS, p.TEL, p.EMAIL
+        FROM "Employee" e LEFT JOIN "PersonalInformation" p ON e.PERSON_ID = p.ID
+        WHERE 1=1
+        <if test="searchCriteria.id != null and searchCriteria.id != ''">
+            AND e.ID = #{searchCriteria.id}
+        </if>
+        <if test="searchCriteria.name != null and searchCriteria.name != ''">
+            AND p.NAME LIKE '%' || #{searchCriteria.name} || '%'
+        </if>
+        <if test="searchCriteria.department != null and searchCriteria.department != ''">
+            AND e.DEPARTMENT = #{searchCriteria.department}
+        </if>
+        <if test="searchCriteria.position != null and searchCriteria.position != ''">
+            AND e.POSITION = #{searchCriteria.position}
+        </if>
+        <if test="searchCriteria.ageStart != null and searchCriteria.ageStart != ''">
+            AND MONTHS_BETWEEN(SYSDATE, p.BIRTHDAY) / 12 >= #{searchCriteria.ageStart}
+        </if>
+        <if test="searchCriteria.ageEnd != null and searchCriteria.ageEnd != ''">
+            AND MONTHS_BETWEEN(SYSDATE, p.BIRTHDAY) / 12 &lt;= #{searchCriteria.ageEnd}
+        </if>
+        <if test="searchCriteria.gender != null and searchCriteria.gender != ''">
+            AND p.GENDER = #{searchCriteria.gender}
+        </if>
+        <if test="searchCriteria.status == null or searchCriteria.status == ''">
+            AND e.STATUS = 'apply'
+        </if>
+        <if test="searchCriteria.status == 'apply'">
+            AND e.STATUS = 'apply'
+        </if>
+        <if test="searchCriteria.status == 'reject'">
+            AND (e.STATUS = 'apply' OR e.STATUS = 'reject')
+        </if>
+    </select>
 
     <select id="searchResumeById" resultType="java.lang.String">
-        SELECT resume
-        FROM USERS
-        WHERE id = #{id}
+        SELECT RESUME
+        FROM "Employee"
+        WHERE ID = #{id}
     </select>
 
-    <update id="acceptApply" parameterType="com.changing.erpsystembackend.entity.Employee">
-        UPDATE USERS
-        SET status = 'join'
-        WHERE id = #{id}
+    <update id="acceptApply" parameterType="int">
+        UPDATE "Employee"
+        SET STATUS = 'join'
+        WHERE ID = #{id}
     </update>
 
-    <update id="rejectApply" parameterType="com.changing.erpsystembackend.entity.Employee">
-        UPDATE USERS
-        SET status = 'reject'
-        WHERE id = #{id}
+    <update id="rejectApply" parameterType="int">
+        UPDATE "Employee"
+        SET STATUS = 'reject'
+        WHERE ID = #{id}
     </update>
 
     <!-- personnel-EmployeeManage -->
-    <select id="searchAllEmployee" resultType="com.changing.erpsystembackend.entity.Employee">
-        SELECT id, name, gender, age, department, position, status
-        FROM USERS
-        WHERE status = 'join'
+    <select id="searchAllEmployee" resultMap="EmployeeResultMap">
+        SELECT
+            e.ID as employee_id, e.PASSWORD, e.DEPARTMENT, e.POSITION, e.STARTDATE, e.ENDDATE, e.STATUS, e.RESUME, e.PERSON_ID,
+            p.ID as personalInformation_id, p.NAME, p.GENDER, p.NATIONALITY, p.BIRTHDAY, p.BIRTHPLACE, p.POLITICALSTATUS, p.TEL, p.EMAIL
+        FROM "Employee" e LEFT JOIN "PersonalInformation" p ON e.PERSON_ID = p.ID
+        WHERE e.STATUS = 'join'
     </select>
 
-    <select id="searchEmployee" resultType="com.changing.erpsystembackend.entity.Employee">
-        SELECT * FROM USERS
+    <select id="searchEmployee" resultMap="EmployeeResultMap">
+        SELECT
+        e.ID as employee_id, e.PASSWORD, e.DEPARTMENT, e.POSITION, e.STARTDATE, e.ENDDATE, e.STATUS, e.RESUME, e.PERSON_ID,
+        p.ID as personalInformation_id, p.NAME, p.GENDER, p.NATIONALITY, p.BIRTHDAY, p.BIRTHPLACE, p.POLITICALSTATUS, p.TEL, p.EMAIL
+        FROM "Employee" e LEFT JOIN "PersonalInformation" p ON e.PERSON_ID = p.ID
         WHERE 1=1
         <if test="searchCriteria.id != null and searchCriteria.id != ''">
-            AND id = #{searchCriteria.id}
+            AND e.ID = #{searchCriteria.id}
         </if>
         <if test="searchCriteria.name != null and searchCriteria.name != ''">
-            AND name LIKE '%' || #{searchCriteria.name} || '%'
+            AND p.NAME LIKE '%' || #{searchCriteria.name} || '%'
         </if>
         <if test="searchCriteria.department != null and searchCriteria.department != ''">
-            AND department = #{searchCriteria.department}
+            AND e.DEPARTMENT = #{searchCriteria.department}
         </if>
         <if test="searchCriteria.position != null and searchCriteria.position != ''">
-            AND position = #{searchCriteria.position}
+            AND e.POSITION = #{searchCriteria.position}
         </if>
         <if test="searchCriteria.ageStart != null and searchCriteria.ageStart != ''">
-            AND age >= #{searchCriteria.ageStart}
+            AND MONTHS_BETWEEN(SYSDATE, p.BIRTHDAY) / 12 >= #{searchCriteria.ageStart}
         </if>
         <if test="searchCriteria.ageEnd != null and searchCriteria.ageEnd != ''">
-            AND age &lt;= #{searchCriteria.ageEnd}
+            AND MONTHS_BETWEEN(SYSDATE, p.BIRTHDAY) / 12 &lt;= #{searchCriteria.ageEnd}
         </if>
         <if test="searchCriteria.gender != null and searchCriteria.gender != ''">
-            AND gender = #{searchCriteria.gender}
+            AND p.GENDER = #{searchCriteria.gender}
         </if>
-        <if test="searchCriteria.status == null and searchCriteria.status == ''">
+        <if test="searchCriteria.status == null or searchCriteria.status == ''">
             AND status = 'join'
         </if>
         <if test="searchCriteria.status == 'join'">
