@@ -1,12 +1,11 @@
 package com.changing.erpsystembackend.controller;
 
 import com.changing.erpsystembackend.common.Result;
-import com.changing.erpsystembackend.common.StringRequest;
+import com.changing.erpsystembackend.dto.personnel.ResumeAnalysisRequest;
 import com.changing.erpsystembackend.service.PersonnelService;
+
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -17,26 +16,26 @@ public class PersonnelController {
 
 	// Home
 	@GetMapping("/employeeDistribution")
-	public int getEmployeeDistribution() {
-		return personnelService.getEmployeeDistribution();
+	public Result getEmployeeDistribution() {
+		return Result.success(personnelService.getEmployeeDistribution());
 	}
 	@GetMapping("/ageDistribution")
-	public List<Map<String, Object>> getAgeDistribution() {
-		return personnelService.getAgeDistribution();
+	public Result getAgeDistribution() {
+		return Result.success(personnelService.getAgeDistribution());
 	}
 	@GetMapping("/departmentDistribution")
-	public List<Map<String, Object>> getDepartmentDistribution() {
-		return personnelService.getDepartmentDistribution();
+	public Result getDepartmentDistribution() {
+		return Result.success(personnelService.getDepartmentDistribution());
 	}
 	@GetMapping("/todayApplyDistribution")
-	public int getApplyDistribution() {
-		return personnelService.getApplyDistribution();
+	public Result getApplyDistribution() {
+		return Result.success(personnelService.getApplyDistribution());
 	}
 
 	// ApplyReview
 	@GetMapping("/searchAllApply")
-	public Result showAllApply() {
-		return Result.success(personnelService.searchAllApply());
+	public Result showAllApply(@RequestParam Map<String, String> searchCriteria) {
+		return Result.success(personnelService.searchAllApply(searchCriteria));
 	}
 	@GetMapping("/searchApply")
 	public Result searchApply(@RequestParam Map<String, String> searchCriteria) {
@@ -47,9 +46,9 @@ public class PersonnelController {
 		return Result.success(personnelService.searchResume(id));
 	}
 	@PostMapping("/analysis")
-	public Result outWroughtIron(@RequestBody StringRequest requestText){
+	public Result outWroughtIron(@RequestBody ResumeAnalysisRequest requestText){
 		String text = requestText.getContent();
-		if( text == null || text.equals("")){
+		if( text == null || text.isEmpty()){
 			return Result.error("无效输入，无法进行分析！");
 		}else{
 			String result = personnelService.executePythonScript(text);
@@ -60,24 +59,24 @@ public class PersonnelController {
 	@PostMapping("/acceptApply")
 	public Result accept(@RequestParam("id") int id){
 		if(personnelService.acceptApply(id)){
-			return Result.success();
+			return Result.success("聘用成功");
 		}else{
-			return Result.error("雇佣失败");
+			return Result.error("聘用失败");
 		}
 	}
 	@PostMapping("/rejectApply")
 	public Result reject(@RequestParam("id") int id){
 		if(personnelService.rejectApply(id)){
-			return Result.success();
+			return Result.success("拒绝成功");
 		}else{
-			return Result.error("雇佣失败");
+			return Result.error("拒绝失败");
 		}
 	}
 
 	// EmployeeManagement
 	@GetMapping("/searchAllEmployee")
-	public Result showAllEmployee() {
-		return Result.success(personnelService.searchAllEmployee());
+	public Result showAllEmployee(@RequestParam Map<String, String> searchCriteria) {
+		return Result.success(personnelService.searchAllEmployee(searchCriteria));
 	}
 	@GetMapping("/searchEmployee")
 	public Result searchEmployee(@RequestParam Map<String, String> searchCriteria) {

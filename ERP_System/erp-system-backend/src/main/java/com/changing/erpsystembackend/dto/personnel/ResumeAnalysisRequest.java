@@ -1,12 +1,10 @@
-package com.changing.erpsystembackend.common;
+package com.changing.erpsystembackend.dto.personnel;
 
-public class StringRequest {
+public class ResumeAnalysisRequest {
 	String content;
-
 	public String getContent() {
 		return content;
 	}
-
 	public void setContent(String content) {
 		this.content = content;
 	}

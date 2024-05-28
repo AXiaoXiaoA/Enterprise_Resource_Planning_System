@@ -3,6 +3,10 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.changing.erpsystembackend.mapper.SalesOrderMapper">
-
+    <!-- Insert -->
+    <insert id="insertSalesOrder" parameterType="com.example.entity.SalesOrder">
+        INSERT INTO SalesOrder (ID, QUANTITY, CONTRACT, APPLY_DATE, COMPANY_ID, STATUS, PRODUCT_NAME)
+        VALUES (SALESORDER_ID_SEQ.NEXTVAL, #{quantity}, #{contract}, #{applyDate}, #{companyId}, #{status}, #{productName})
+    </insert>
 
 </mapper>

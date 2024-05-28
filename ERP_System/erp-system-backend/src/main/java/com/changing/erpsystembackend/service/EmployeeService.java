@@ -1,12 +1,17 @@
 package com.changing.erpsystembackend.service;
 
+import com.changing.erpsystembackend.dto.employee.LoginRequestDTO;
+import com.changing.erpsystembackend.dto.employee.RegisterRequestDTO;
 import com.changing.erpsystembackend.entity.Employee;
 import com.changing.erpsystembackend.entity.PersonalInformation;
 import com.changing.erpsystembackend.mapper.EmployeeMapper;
-
 import com.changing.erpsystembackend.mapper.PersonalInformationMapper;
+import com.changing.erpsystembackend.util.DateConversionUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 @Service
 public class EmployeeService {
@@ -15,12 +20,39 @@ public class EmployeeService {
     @Autowired
     private PersonalInformationMapper personalInformationMapper;
 
-    public Employee login(Long tel, String password) {
-        return employeeMapper.findByTelAndPassword(tel, password);
+    public Employee login(LoginRequestDTO loginRequest) {
+        Long tel = loginRequest.getTel();
+        String password = loginRequest.getPassword();
+        return employeeMapper.findEmployeeByTelAndPassword(tel, password);
     }
-    public boolean register(Employee employee, PersonalInformation personalInformation) {
+    public boolean register(RegisterRequestDTO registerRequest) {
+        PersonalInformation personalInformation = new PersonalInformation();
+        personalInformation.setId(registerRequest.getId());
+        personalInformation.setName(registerRequest.getName());
+        personalInformation.setGender(registerRequest.getGender());
+        personalInformation.setNationality(registerRequest.getNationality());
+        personalInformation.setBirthday(DateConversionUtils.toSqlDate(java.sql.Date.valueOf(registerRequest.getBirthday())));
+        personalInformation.setBirthplace(registerRequest.getBirthplace());
+        personalInformation.setPoliticalStatus(registerRequest.getPoliticalStatus());
+        personalInformation.setTel(registerRequest.getTel());
+        personalInformation.setEmail(registerRequest.getEmail());
+
+        Employee employee = new Employee();
+        employee.setPersonId(registerRequest.getId());
+        employee.setDepartment(registerRequest.getDepartment());
+        employee.setPosition(registerRequest.getPosition());
+        employee.setStartDate(new java.sql.Date(System.currentTimeMillis()));
+        employee.setStatus("apply");
+        if (registerRequest.getResume() != null) {
+            try {
+                String content = new String(registerRequest.getResume().getBytes(), StandardCharsets.UTF_8);
+                employee.setResume(content);
+            } catch (IOException e) {
+                return false;
+            }
+        }
         try {
-            if (personalInformationMapper.findByID(personalInformation.getId()) != null) {
+            if (personalInformationMapper.findEmployeeByID(personalInformation.getId()) != null) {
                 return false;
             }
             personalInformationMapper.insertPersonalInformation(personalInformation);

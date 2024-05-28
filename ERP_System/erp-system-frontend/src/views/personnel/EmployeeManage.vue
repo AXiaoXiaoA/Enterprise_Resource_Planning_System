@@ -95,7 +95,7 @@ const statusMap = {
   join: '在职'
 };
 const loadData = (page = 1) => {
-  axios.get('/api/personnel/searchAllEmployee', { params: { page } })
+  axios.get('/api/personnel/searchAllEmployee', { params: searchCriteria })
       .then(response => {
         const res = response.data;
         tableData.items = res.data.map(item => ({

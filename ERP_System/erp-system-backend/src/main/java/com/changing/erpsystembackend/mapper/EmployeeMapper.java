@@ -13,25 +13,20 @@ import java.util.Map;
 
 @Mapper
 public interface EmployeeMapper {
-    // login and register
-    Employee findByTelAndPassword(@Param("tel") Long tel, @Param("password") String password);
+    // insert
     void insertEmployee(Employee employee);
 
-    // personnel-Home
+    // update
+    boolean acceptApply(@Param("id") int id);
+    boolean rejectApply(@Param("id") int id);
+
+    // select
+    Employee findEmployeeByTelAndPassword(@Param("tel") Long tel, @Param("password") String password);
     int getEmployeeDistribution();
     List<Map<String, Object>> getAgeDistribution();
     List<Map<String, Object>> getDepartmentDistribution();
     int getApplyDistribution();
-
-    // personnel-ApplyCheck
-    List<Employee> searchAllApply();
-    List<Employee> searchApply(@Param("searchCriteria") Map<String, String> searchCriteria);
+    List<Employee> searchEmployee(@Param("searchCriteria") Map<String, String> searchCriteria);
     @Results({@Result(column = "resume", property = "resume", jdbcType = JdbcType.CLOB, typeHandler = ClobTypeHandler.class)})
     String searchResumeById(int id);
-    boolean acceptApply(@Param("id") int id);
-    boolean rejectApply(@Param("id") int id);
-
-    // personnel-EmployeeManage
-    List<Employee> searchAllEmployee();
-    List<Employee> searchEmployee(@Param("searchCriteria") Map<String, String> searchCriteria);
 }

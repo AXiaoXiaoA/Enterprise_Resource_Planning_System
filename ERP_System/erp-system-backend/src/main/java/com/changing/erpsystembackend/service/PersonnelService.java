@@ -3,9 +3,8 @@ package com.changing.erpsystembackend.service;
 import com.changing.erpsystembackend.entity.Employee;
 import com.changing.erpsystembackend.mapper.EmployeeMapper;
 
-import jakarta.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.List;
@@ -13,7 +12,7 @@ import java.util.Map;
 
 @Service
 public class PersonnelService {
-    @Resource
+    @Autowired
     EmployeeMapper employeeMapper;
 
     // Home
@@ -31,11 +30,11 @@ public class PersonnelService {
     }
 
     // ApplyCheck
-    public List<Employee> searchAllApply(){
-        return employeeMapper.searchAllApply();
+    public List<Employee> searchAllApply(Map<String, String> searchCriteria){
+        return employeeMapper.searchEmployee(searchCriteria);
     }
     public List<Employee> searchApply(Map<String, String> searchCriteria) {
-        return employeeMapper.searchApply(searchCriteria);
+        return employeeMapper.searchEmployee(searchCriteria);
     }
     public String searchResume(int selectedId){
         return employeeMapper.searchResumeById(selectedId);
@@ -74,8 +73,8 @@ public class PersonnelService {
     }
 
     // EmployeeManage
-    public List<Employee> searchAllEmployee() {
-        return employeeMapper.searchAllEmployee();
+    public List<Employee> searchAllEmployee(Map<String, String> searchCriteria) {
+        return employeeMapper.searchEmployee(searchCriteria);
     }
     public List<Employee> searchEmployee(Map<String, String> searchCriteria) {
         return employeeMapper.searchEmployee(searchCriteria);

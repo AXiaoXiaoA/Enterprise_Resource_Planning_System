@@ -1,20 +1,18 @@
 package com.changing.erpsystembackend.entity;
 
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
 
-import java.sql.Date;
-
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class PersonalInformation {
     private String id;
     private String name;
     private String gender;
     private String nationality;
-    private Date birthday;
+    private java.sql.Date birthday;
     private String birthplace;
     private String politicalStatus;
     private Long tel;

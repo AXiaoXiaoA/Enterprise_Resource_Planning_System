@@ -1,23 +1,22 @@
 package com.changing.erpsystembackend.entity;
 
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
 
-import java.sql.Date;
-
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
+@AllArgsConstructor
 public class Employee {
     private Long id;
-    private String password;
+    private String personId;
     private String department;
     private String position;
-    private Date startDate;
-    private Date endDate;
+    private java.sql.Date startDate;
+    private java.sql.Date endDate;
     private String status;
+    private String password;
     private String resume;
-    private String personId;
+
     private PersonalInformation personalInformation;
 }

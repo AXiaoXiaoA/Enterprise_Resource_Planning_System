@@ -3,16 +3,16 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.changing.erpsystembackend.mapper.PersonalInformationMapper">
-    <!-- Find PersonalInformation by ID -->
-    <select id="findByID" parameterType="java.lang.String" resultType="com.changing.erpsystembackend.entity.PersonalInformation">
-        SELECT *
-        FROM "PersonalInformation"
-        WHERE ID = #{id}
-    </select>
-
-    <!-- Insert PersonalInformation -->
+    <!-- Insert -->
     <insert id="insertPersonalInformation" parameterType="com.changing.erpsystembackend.entity.PersonalInformation">
         INSERT INTO "PersonalInformation" (ID, NAME, GENDER, NATIONALITY, BIRTHDAY, BIRTHPLACE, POLITICALSTATUS, TEL, EMAIL)
         VALUES (#{id}, #{name}, #{gender}, #{nationality}, #{birthday}, #{birthplace}, #{politicalStatus}, #{tel}, #{email})
     </insert>
+
+    <!-- Select -->
+    <select id="findEmployeeByID" parameterType="java.lang.String" resultType="com.changing.erpsystembackend.entity.PersonalInformation">
+        SELECT *
+        FROM "PersonalInformation"
+        WHERE ID = #{id}
+    </select>
 </mapper>

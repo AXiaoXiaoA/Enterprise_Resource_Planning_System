@@ -5,7 +5,7 @@
         <el-row>
           <el-col :span="24">
             <h1>欢迎使用轧钢厂管理系统！</h1>
-            <p class="department-info">您所在的部门是：人事部！</p>
+            <p class="department-info">您所在的部门是：销售部！</p>
             <p class="greeting">祝您有个美好的一天！</p>
           </el-col>
         </el-row>
@@ -16,38 +16,38 @@
         <el-row :gutter="20" class="section">
           <el-col :span="8">
             <el-card shadow="hover" class="overview-card">
-              <h3>员工总数</h3>
-              <p class="overview-number">{{ totalEmployees }}</p>
+              <h3>总销售额</h3>
+              <p class="overview-number">{{ totalSales }}</p>
             </el-card>
           </el-col>
           <el-col :span="8">
             <el-card shadow="hover" class="overview-card">
-              <h3>当前应聘</h3>
-              <p class="overview-number">{{ totalApply }}</p>
+              <h3>本月销售额</h3>
+              <p class="overview-number">{{ monthlySales }}</p>
             </el-card>
           </el-col>
           <el-col :span="8">
             <el-card shadow="hover" class="overview-card">
-              <h3>招聘指标</h3>
-              <p class="overview-number">5</p>
+              <h3>今日订单</h3>
+              <p class="overview-number">{{ todayOrders }}</p>
             </el-card>
           </el-col>
         </el-row>
 
         <el-divider></el-divider>
 
-        <!-- 员工统计图表 -->
+        <!-- 销售统计图表 -->
         <el-row :gutter="20" class="section">
           <el-col :span="12">
             <el-card shadow="hover" class="chart-card">
-              <h2>员工年龄分布</h2>
-              <div ref="ageChartContainerRef" class="chart-container"></div>
+              <h2>销售额趋势</h2>
+              <div ref="salesTrendChartContainerRef" class="chart-container"></div>
             </el-card>
           </el-col>
           <el-col :span="12">
             <el-card shadow="hover" class="chart-card">
-              <h2>各部门人数</h2>
-              <div ref="departmentChartContainerRef" class="chart-container"></div>
+              <h2>订单分布</h2>
+              <div ref="ordersDistributionChartContainerRef" class="chart-container"></div>
             </el-card>
           </el-col>
         </el-row>
@@ -77,8 +77,8 @@
               <el-carousel :interval="5000" type="card" height="300px">
                 <el-carousel-item v-for="(activity, index) in activities" :key="index">
                   <div class="activity-item">
-                   <h3>{{ activity.title }}</h3>
-                   <p>{{ activity.description }}</p>
+                    <h3>{{ activity.title }}</h3>
+                    <p>{{ activity.description }}</p>
                   </div>
                 </el-carousel-item>
               </el-carousel>
@@ -117,58 +117,46 @@
 </template>
 
 <script setup>
-import {computed, onMounted, ref} from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import axios from 'axios';
 import * as echarts from 'echarts';
-import {ElMessage} from "element-plus";
 
-const employees = ref(null);
+const totalSales = ref(0);
+const monthlySales = ref(0);
+const todayOrders = ref(0);
+
 onMounted(async () => {
   try {
-    const response = await axios.get('/api/personnel/employeeDistribution');
-    employees.value = response.data.data;
+    const salesResponse = await axios.get('/api/sales/totalSales');
+    totalSales.value = salesResponse.data.total;
+
+    const monthlySalesResponse = await axios.get('/api/sales/monthlySales');
+    monthlySales.value = monthlySalesResponse.data.monthly;
+
+    const todayOrdersResponse = await axios.get('/api/sales/todayOrders');
+    todayOrders.value = todayOrdersResponse.data.orders;
   } catch (error) {
-    ElMessage.error("数据获取失败");
     console.error(error);
   }
 });
-const totalEmployees = computed(() => employees.value ?? 0);
 
-const apply = ref(null);
+const salesTrendChartRef = ref(null);
+const salesTrendChartContainerRef = ref(null);
 onMounted(async () => {
   try {
-    const response = await axios.get('/api/personnel/todayApplyDistribution');
-    apply.value = response.data.data;
-  } catch (error) {
-    ElMessage.error("数据获取失败");
-    console.error(error)
-  }
-});
-const totalApply = computed(() => apply.value ?? 0);
+    const response = await axios.get('/api/sales/salesTrend');
+    salesTrendChartRef.value = response.data;
 
-const ageChartRef = ref(null);
-const ageChartContainerRef = ref(null);
-onMounted(async () => {
-  try {
-    const response = await axios.get('/api/personnel/ageDistribution');
-    ageChartRef.value = response.data.data;
-
-    const ageChart = echarts.init(ageChartContainerRef.value);
-    const xAxisData = ageChartRef.value.map(entry => `${entry['AGE_BRACKET']} - ${entry['AGE_BRACKET'] + 4}`);
-    const seriesData = ageChartRef.value.map(entry => entry['COUNT']);
+    const salesTrendChart = echarts.init(salesTrendChartContainerRef.value);
+    const xAxisData = salesTrendChartRef.value.map(entry => entry.date);
+    const seriesData = salesTrendChartRef.value.map(entry => entry.sales);
 
     const option = {
-      color: ['#3398DB'],
+      color: ['#67C23A'],
       tooltip: {
         trigger: 'axis',
         axisPointer: {
           type: 'shadow'
-        },
-        backgroundColor: 'rgba(0,0,0,0.7)',
-        borderColor: '#333',
-        borderWidth: 1,
-        textStyle: {
-          color: '#fff'
         }
       },
       xAxis: {
@@ -181,39 +169,30 @@ onMounted(async () => {
       },
       series: [{
         data: seriesData,
-        type: 'bar'
+        type: 'line'
       }]
     };
-    ageChart.setOption(option);
+    salesTrendChart.setOption(option);
 
     window.addEventListener('resize', () => {
-      ageChart.resize();
+      salesTrendChart.resize();
     });
   } catch (error) {
-    ElMessage.error("数据获取失败");
     console.error(error);
   }
 });
 
-const departmentChartRef = ref(null);
-const departmentChartContainerRef = ref(null);
+const ordersDistributionChartRef = ref(null);
+const ordersDistributionChartContainerRef = ref(null);
 onMounted(async () => {
   try {
-    const response = await axios.get('/api/personnel/departmentDistribution');
-    departmentChartRef.value = response.data.data;
+    const response = await axios.get('/api/sales/ordersDistribution');
+    ordersDistributionChartRef.value = response.data;
 
-    const departmentNameMap = {
-      'personnel': '人事部',
-      'repo': '仓储部',
-      'purchasing': '采购部',
-      'sales': '销售部',
-      'production': '生产部'
-    };
-
-    const departmentChart = echarts.init(departmentChartContainerRef.value);
-    const seriesData = departmentChartRef.value.map(entry => ({
-      value: entry['COUNT'],
-      name: departmentNameMap[entry['DEPARTMENT']]
+    const ordersDistributionChart = echarts.init(ordersDistributionChartContainerRef.value);
+    const seriesData = ordersDistributionChartRef.value.map(entry => ({
+      value: entry.count,
+      name: entry.region
     }));
 
     const option = {
@@ -227,7 +206,7 @@ onMounted(async () => {
       },
       series: [
         {
-          name: '部门人数',
+          name: '订单分布',
           type: 'pie',
           radius: '50%',
           data: seriesData,
@@ -241,34 +220,30 @@ onMounted(async () => {
         }
       ]
     };
-    departmentChart.setOption(option);
+    ordersDistributionChart.setOption(option);
 
     window.addEventListener('resize', () => {
-      departmentChart.resize();
+      ordersDistributionChart.resize();
     });
-    departmentChart.resize();
-
   } catch (error) {
-    ElMessage.error("数据获取失败");
     console.error(error);
   }
 });
 
-
 const notices = ref([
-  { date: '2023-01-04', content: '下周一是法定假日，全公司放假一天。' },
-  { date: '2023-01-03', content: '本周五将举行全员会议，请大家准时参加。' },
+  { date: '2023-01-04', content: '下周一将举行销售策略会议，请销售部员工准时参加。' },
+  { date: '2023-01-03', content: '本周五将进行销售技能培训，请大家积极参加。' },
   { date: '2023-01-01', content: '新年快乐！' },
 ]);
 const activities = ref([
-  { title: '新年联欢会', description: '欢迎大家参加新年联欢会，共同庆祝新的一年的到来！' },
-  { title: '员工培训', description: '本周五将举行员工培训，主题是提高团队协作能力。' },
-  { title: '健康讲座', description: '下周一将有专家为我们做健康讲座，让我们一起关注健康。' },
+  { title: '年度销售总结会', description: '欢迎参加年度销售总结会，共同回顾过去一年的销售情况。' },
+  { title: '客户联谊会', description: '本周将举行客户联谊会，欢迎大家积极参加。' },
+  { title: '销售技能培训', description: '下周将有专家为我们进行销售技能培训，请大家积极参与。' },
 ]);
 const todos = ref([
-  { task: '完成报告', deadline: '2023-01-10', status: '进行中' },
-  { task: '准备会议', deadline: '2023-01-12', status: '未开始' },
-  { task: '更新项目', deadline: '2023-01-15', status: '已完成' },
+  { task: '客户拜访', deadline: '2023-01-10', status: '进行中' },
+  { task: '销售报告', deadline: '2023-01-12', status: '未开始' },
+  { task: '市场调研', deadline: '2023-01-15', status: '已完成' },
 ]);
 const attendances = ref([
   { name: '张三', date: '2023-01-04', status: '正常' },

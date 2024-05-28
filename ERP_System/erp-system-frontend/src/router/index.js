@@ -5,10 +5,10 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
-      path: '/', name: 'Login', component: () => import('../views/user/UserLogin.vue')
+      path: '/', name: 'Login', component: () => import('../views/employee/UserLogin.vue')
     },
     {
-      path:'/register', name:'Register', component:() => import('../views/user/UserRegister.vue')
+      path:'/register', name:'Register', component:() => import('../views/employee/UserRegister.vue')
     },
     //人事部门界面
     {
@@ -25,6 +25,27 @@ const router = createRouter({
         },
         {
           path:'/Personnel/EmployeeManage', name:'personnel_employeeManage', component:()=>import('@/views/personnel/EmployeeManage.vue'),
+        }
+      ]
+    },
+    //销售部门界面
+    {
+      path: '/sales/Homepage',
+      name: 'Sales_homepage',
+      component: () => import('../views/sales/Homepage.vue'),
+      redirect: '/sales/Home',
+      children:[
+        {
+          path:'/sales/Home',name:'sales_home',component:()=>import('@/views/sales/Home.vue')
+        },
+        {
+          path:'/sales/OrderCheck',name:'sales_orderCheck',component:()=>import('@/views/sales/OrderCheck.vue'),
+        },
+        {
+          path:'/sales/OrderSubmit',name:'sales_orderSubmit',component:()=>import('@/views/sales/OrderSubmit.vue')
+        },
+        {
+          path:'/sales/OrderProcess',name:'sales_orderProcess',component:()=>import('@/views/sales/OrderProcess.vue')
         }
       ]
     },

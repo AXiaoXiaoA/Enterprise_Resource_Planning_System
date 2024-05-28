@@ -119,7 +119,7 @@ const statusMap = {
   apply: '应聘中'
 };
 const loadData = (page = 1) => {
-  axios.get('/api/personnel/searchAllApply', { params: { page } })
+  axios.get('/api/personnel/searchAllApply', { params: searchCriteria })
       .then(response => {
         const res = response.data;
         tableData.items = res.data.map(item => ({
