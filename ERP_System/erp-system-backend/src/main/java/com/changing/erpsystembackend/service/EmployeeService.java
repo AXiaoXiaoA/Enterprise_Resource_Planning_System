@@ -42,7 +42,7 @@ public class EmployeeService {
         employee.setDepartment(registerRequest.getDepartment());
         employee.setPosition(registerRequest.getPosition());
         employee.setStartDate(new java.sql.Date(System.currentTimeMillis()));
-        employee.setStatus("apply");
+        employee.setStatus("应聘中");
         if (registerRequest.getResume() != null) {
             try {
                 String content = new String(registerRequest.getResume().getBytes(), StandardCharsets.UTF_8);

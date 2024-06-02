@@ -84,7 +84,7 @@
             AND pi1.NAME LIKE '%' || #{employeeName} || '%'
         </if>
         <if test="id != null and id != ''">
-            so.ID = #{id}
+            AND so.ID = #{id}
         </if>
         <if test="productName != null and productName != ''">
             AND so.PRODUCT_NAME LIKE '%' || #{productName} || '%'

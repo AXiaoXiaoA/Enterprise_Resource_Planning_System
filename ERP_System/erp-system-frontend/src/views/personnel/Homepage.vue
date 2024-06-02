@@ -7,7 +7,7 @@
       </div>
       <div class="header-right">
         <img :src="employee.avatar || defaultAvatar" alt="User Avatar" class="avatar">
-        <span class="welcome-text">欢迎您: {{ employee.id }}</span>
+        <span class="welcome-text">欢迎您: {{ employee.person.name}}</span>
       </div>
     </div>
 

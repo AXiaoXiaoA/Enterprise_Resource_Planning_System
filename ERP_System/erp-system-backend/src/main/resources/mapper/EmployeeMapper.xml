@@ -5,20 +5,20 @@
 <mapper namespace="com.changing.erpsystembackend.mapper.EmployeeMapper">
     <!-- Insert -->
     <insert id="insertEmployee" parameterType="com.changing.erpsystembackend.entity.Employee">
-        INSERT INTO "Employee" (ID, PERSON_ID, DEPARTMENT, POSITION, STARTDATE, STATUS, RESUME)
+        INSERT INTO "Employee" (ID, PERSON_ID, DEPARTMENT, POSITION, START_DATE, STATUS, RESUME)
         VALUES (EMPLOYEE_ID_SEQ.NEXTVAL, #{personId}, #{department}, #{position}, #{startDate}, #{status}, #{resume,jdbcType=CLOB})
     </insert>
 
     <!-- Update -->
     <update id="acceptApply" parameterType="int">
         UPDATE "Employee"
-        SET STATUS = 'join', PASSWORD = '123'
+        SET STATUS = '在职', PASSWORD = '123'
         WHERE ID = #{id}
     </update>
 
     <update id="rejectApply" parameterType="int">
         UPDATE "Employee"
-        SET STATUS = 'reject'
+        SET STATUS = '已拒绝'
         WHERE ID = #{id}
     </update>
 
@@ -33,14 +33,14 @@
     <select id="getEmployeeDistribution" resultType="int">
         SELECT COUNT(*) AS count
         FROM "Employee"
-        WHERE status = 'join'
+        WHERE status = '在职'
     </select>
 
     <select id="getAgeDistribution" resultType="java.util.Map">
         SELECT COUNT(*) AS count, FLOOR(MONTHS_BETWEEN(SYSDATE, BIRTHDAY) / 12 / 5) * 5 AS age_bracket
         FROM "Person" p
             JOIN "Employee" e ON p.ID = e.PERSON_ID
-        WHERE e.STATUS = 'join'
+        WHERE e.STATUS = '在职'
         GROUP BY FLOOR(MONTHS_BETWEEN(SYSDATE, BIRTHDAY) / 12 / 5) * 5
         ORDER BY age_bracket
     </select>
@@ -48,18 +48,18 @@
     <select id="getDepartmentDistribution" resultType="java.util.Map">
         SELECT department, COUNT(*) AS count
         FROM "Employee"
-        WHERE status = 'join'
+        WHERE status = '在职'
         GROUP BY department
     </select>
 
     <select id="getApplyDistribution" resultType="int">
         SELECT COUNT(*) AS count
         FROM "Employee"
-        WHERE status = 'apply'
+        WHERE status = '应聘中'
     </select>
 
     <select id="findEmployee" parameterType="com.changing.erpsystembackend.dto.personnel.SearchEmployeeRequestDTO" resultMap="EmployeeResultMap">
-        SELECT e.ID as employee_id, e.DEPARTMENT, e.POSITION, e.STARTDATE, e.STATUS, e.RESUME, p.NAME, p.GENDER, p.BIRTHDAY
+        SELECT e.ID as employee_id, e.DEPARTMENT, e.POSITION, e.START_DATE, e.STATUS, e.RESUME, p.NAME, p.GENDER, p.BIRTHDAY
         FROM "Employee" e LEFT JOIN "Person" p ON e.PERSON_ID = p.ID
         WHERE 1=1
         <if test="id != null and id != ''">

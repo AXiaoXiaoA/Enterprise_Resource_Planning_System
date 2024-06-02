@@ -46,6 +46,24 @@ const router = createRouter({
         }
       ]
     },
+    //采购部门界面
+    {
+      path: '/purchasing/Homepage',
+      name: 'Purchasing_homepage',
+      component: () => import('../views/purchasing/Homepage.vue'),
+      redirect: '/purchasing/Home',
+      children:[
+        {
+          path:'/purchasing/Home',name:'purchasing_home',component:()=>import('@/views/purchasing/Home.vue')
+        },
+        {
+          path:'/purchasing/OrderCheck',name:'purchasing_orderCheck',component:()=>import('@/views/purchasing/OrderCheck.vue'),
+        },
+        {
+          path:'/purchasing/OrderSubmit',name:'purchasing_orderSubmit',component:()=>import('@/views/purchasing/OrderSubmit.vue')
+        }
+      ]
+    },
   ]
 })
 

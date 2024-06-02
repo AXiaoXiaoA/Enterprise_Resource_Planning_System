@@ -23,7 +23,7 @@
         <el-option label="男" value="male"></el-option>
         <el-option label="女" value="female"></el-option>
       </el-select>
-      <el-switch v-model="searchCriteria.status" active-text="显示已离职" inactive-text="隐藏已离职" active-value="resign" inactive-value="join"/>
+      <el-switch v-model="searchCriteria.status" active-text="显示已离职" inactive-text="隐藏已离职" active-value="离职" inactive-value="在职"/>
       <div class="search-buttons">
         <el-button type="primary" round @click="search">查询</el-button>
         <el-button type="warning" round @click="reset">重置</el-button>
@@ -82,17 +82,9 @@ const departmentMap = {
   production: '生产部',
   purchasing: '采购部'
 };
-const positionMap = {
-  manager: '总经理',
-  worker: '职员'
-};
 const genderMap = {
   male: '男',
   female: '女'
-};
-const statusMap = {
-  resign: '已离职',
-  join: '在职'
 };
 const loadData = (page = 1) => {
   axios.post('/api/personnel/searchEmployee', searchCriteria)
@@ -104,8 +96,8 @@ const loadData = (page = 1) => {
           gender: genderMap[item.person.gender] || item.person.gender,
           age: new Date().getFullYear() - new Date(item.person.birthday).getFullYear(),
           department: departmentMap[item.department] || item.department,
-          position: positionMap[item.position] || item.position,
-          status: statusMap[item.status] || item.status,
+          position: item.position,
+          status: item.status,
         }));
       })
       .catch(error => {
@@ -123,26 +115,10 @@ const searchCriteria = reactive({
   gender: '',
   ageStart: '',
   ageEnd: '',
-  status: 'join'
+  status: '在职'
 });
 const search = () => {
-  axios.post('/api/personnel/searchEmployee', searchCriteria)
-      .then(response => {
-        const res = response.data;
-        tableData.items = res.data.map(item => ({
-          id: item.id,
-          name: item.person.name,
-          gender: genderMap[item.person.gender] || item.person.gender,
-          age: new Date().getFullYear() - new Date(item.person.birthday).getFullYear(),
-          department: departmentMap[item.department] || item.department,
-          position: positionMap[item.position] || item.position,
-          status: statusMap[item.status] || item.status,
-        }));
-      })
-      .catch(error => {
-        ElMessage.error("搜索失败");
-        console.error('Error searching:', error);
-      });
+  loadData();
 };
 
 // 查看简历
@@ -170,7 +146,7 @@ const reset = () => {
   searchCriteria.gender = '';
   searchCriteria.ageStart = '';
   searchCriteria.ageEnd = '';
-  searchCriteria.status = 'join';
+  searchCriteria.status = '在职';
   loadData();
 };
 const totalItems = ref(1000);

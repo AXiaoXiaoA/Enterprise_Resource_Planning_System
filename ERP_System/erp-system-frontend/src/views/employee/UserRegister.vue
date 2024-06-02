@@ -43,13 +43,13 @@
               <el-option label="仓储部" value="repo"/>
               <el-option label="人事部" value="personnel"/>
               <el-option label="生产部" value="production"/>
-              <el-option label="采购部" value="purchase"/>
+              <el-option label="采购部" value="purchasing"/>
             </el-select>
           </el-form-item>
           <el-form-item label="申请岗位" prop="position">
             <el-select v-model="data.form.position" placeholder="岗位">
-              <el-option label="总经理" value="manager"/>
-              <el-option label="普通职员" value="worker"/>
+              <el-option label="部长" value="部长"/>
+              <el-option label="部员" value="部员"/>
             </el-select>
           </el-form-item>
           <el-upload class="upload-demo" drag :file-list="data.form.fileList" multiple :auto-upload="false" @change="handleFileChange" :before-upload="beforeUpload">

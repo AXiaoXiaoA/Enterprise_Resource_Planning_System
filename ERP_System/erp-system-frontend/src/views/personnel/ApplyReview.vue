@@ -23,7 +23,7 @@
         <el-option label="男" value="male"></el-option>
         <el-option label="女" value="female"></el-option>
       </el-select>
-      <el-switch v-model="searchCriteria.status" active-text="显示已拒绝" active-value="reject" inactive-text="隐藏已拒绝" inactive-value="apply"/>
+      <el-switch v-model="searchCriteria.status" active-text="显示已拒绝" active-value="已拒绝" inactive-text="隐藏已拒绝" inactive-value="应聘中"/>
       <div class="search-buttons">
         <el-button type="primary" round @click="search">查询</el-button>
         <el-button type="warning" round @click="reset">重置</el-button>
@@ -106,10 +106,6 @@ const departmentMap = {
   production: '生产部',
   purchasing: '采购部'
 };
-const statusMap = {
-  reject: '已拒绝',
-  apply: '应聘中'
-};
 const searchCriteria = reactive({
   id: '',
   name: '',
@@ -118,7 +114,7 @@ const searchCriteria = reactive({
   gender: '',
   ageStart: '',
   ageEnd: '',
-  status: 'apply'
+  status: '应聘中'
 });
 const loadData = (page = 1) => {
   axios.post('/api/personnel/searchApply', searchCriteria)
@@ -128,10 +124,10 @@ const loadData = (page = 1) => {
           id: item.id,
           name: item.person.name,
           gender: item.person.gender,
-          age: new Date().getFullYear() - new Date(item.persona.birthday).getFullYear(),
+          age: new Date().getFullYear() - new Date(item.person.birthday).getFullYear(),
           department: departmentMap[item.department] || item.department,
           position: item.position,
-          status: statusMap[item.status] || item.status,
+          status: item.status,
           applyDate: item.startDate,
         }));
       })
@@ -143,24 +139,7 @@ const loadData = (page = 1) => {
 
 // 查找应聘者
 const search = () => {
-  axios.post('/api/personnel/searchApply', searchCriteria)
-      .then(response => {
-        const res = response.data;
-        tableData.items = res.data.map(item => ({
-          id: item.id,
-          name: item.person.name,
-          gender: genderMap[item.person.gender] || item.person.gender,
-          age: new Date().getFullYear() - new Date(item.person.birthday).getFullYear(),
-          department: departmentMap[item.department] || item.department,
-          position: positionMap[item.position] || item.position,
-          status: statusMap[item.status] || item.status,
-          applyDate: item.startDate,
-        }));
-      })
-      .catch(error => {
-        ElMessage.error("搜索失败");
-        console.error('Error searching:', error);
-      });
+  loadData();
 };
 
 // 查看简历
@@ -256,7 +235,7 @@ const reset = () => {
   searchCriteria.gender = '';
   searchCriteria.ageStart = '';
   searchCriteria.ageEnd = '';
-  searchCriteria.status = 'apply';
+  searchCriteria.status = '应聘中';
   loadData();
 };
 const totalItems = ref(1000);
