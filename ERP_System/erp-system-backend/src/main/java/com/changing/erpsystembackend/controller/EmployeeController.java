@@ -18,6 +18,7 @@ public class EmployeeController {
     @PostMapping("/login")
     public Result login(@RequestBody LoginRequestDTO loginRequest) {
         Employee employee = employeeService.login(loginRequest);
+        System.out.println(employee);
         if(employee == null){
             return Result.error("输入的用户名或者密码错误");
         }else{

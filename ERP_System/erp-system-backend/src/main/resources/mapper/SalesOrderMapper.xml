@@ -4,9 +4,238 @@
 
 <mapper namespace="com.changing.erpsystembackend.mapper.SalesOrderMapper">
     <!-- Insert -->
-    <insert id="insertSalesOrder" parameterType="com.example.entity.SalesOrder">
-        INSERT INTO SalesOrder (ID, QUANTITY, CONTRACT, APPLY_DATE, COMPANY_ID, STATUS, PRODUCT_NAME)
-        VALUES (SALESORDER_ID_SEQ.NEXTVAL, #{quantity}, #{contract}, #{applyDate}, #{companyId}, #{status}, #{productName})
+    <insert id="insertSalesOrder" parameterType="com.changing.erpsystembackend.entity.SalesOrder">
+        INSERT INTO "SalesOrder" (SALES_EMPLOYEE_ID, COMPANY_ID, QUANTITY, CONTRACT, APPLY_DATE, DESTINATION, STATUS, PRODUCT_NAME, DESCRIPTION)
+        VALUES (#{salesEmployeeId}, #{companyId}, #{quantity}, #{contract}, #{applyDate}, #{destination}, #{status}, #{productName}, #{description})
     </insert>
 
+    <!-- Update -->
+    <update id="checkSalesOrder" parameterType="com.changing.erpsystembackend.dto.sales.CheckSalesOrderRequestDTO">
+        UPDATE "SalesOrder"
+        SET STATUS = #{status}
+        WHERE ID = #{id}
+    </update>
+
+    <!-- Select -->
+    <select id="findSalesOrder" parameterType="com.changing.erpsystembackend.dto.sales.SearchSalesOrderRequestDTO" resultMap="SalesOrderResultMap">
+        SELECT
+        so.ID AS ID,
+        so.PRODUCT_ID AS PRODUCT_ID,
+        so.SALES_EMPLOYEE_ID AS SALES_EMPLOYEE_ID,
+        so.COMPANY_ID AS COMPANY_ID,
+        so.REPO_EMPLOYEE_ID AS REPO_EMPLOYEE_ID,
+        so.QUANTITY AS QUANTITY,
+        so.CONTRACT AS CONTRACT,
+        so.APPLY_DATE AS APPLY_DATE,
+        so.DESTINATION AS DESTINATION,
+        so.STATUS AS STATUS,
+        so.PRODUCT_NAME AS SO_PRODUCT_NAME,
+        so.DESCRIPTION AS DESCRIPTION,
+        p.NAME AS PRODUCT_NAME,
+        p.PRICE AS PRICE,
+        p.INVENTORY AS INVENTORY,
+        p.REMAINING AS REMAINING,
+        p.MATERIAL_ID AS MATERIAL_ID,
+        p.MATERIAL_CONSUME AS MATERIAL_CONSUME,
+        e1.PASSWORD AS SALES_EMPLOYEE_PASSWORD,
+        e1.DEPARTMENT AS SALES_EMPLOYEE_DEPARTMENT,
+        e1.POSITION AS SALES_EMPLOYEE_POSITION,
+        e1.START_DATE AS SALES_EMPLOYEE_STARTDATE,
+        e1.END_DATE AS SALES_EMPLOYEE_ENDDATE,
+        e1.STATUS AS SALES_EMPLOYEE_STATUS,
+        e1.RESUME AS SALES_EMPLOYEE_RESUME,
+        pi1.NAME AS SALES_EMPLOYEE_NAME,
+        pi1.GENDER AS SALES_EMPLOYEE_GENDER,
+        pi1.NATIONALITY AS SALES_EMPLOYEE_NATIONALITY,
+        pi1.BIRTHDAY AS SALES_EMPLOYEE_BIRTHDAY,
+        pi1.BIRTHPLACE AS SALES_EMPLOYEE_BIRTHPLACE,
+        pi1.POLITICALSTATUS AS SALES_EMPLOYEE_POLITICALSTATUS,
+        pi1.TEL AS SALES_EMPLOYEE_TEL,
+        pi1.EMAIL AS SALES_EMPLOYEE_EMAIL,
+        e2.PASSWORD AS REPO_EMPLOYEE_PASSWORD,
+        e2.DEPARTMENT AS REPO_EMPLOYEE_DEPARTMENT,
+        e2.POSITION AS REPO_EMPLOYEE_POSITION,
+        e2.START_DATE AS REPO_EMPLOYEE_STARTDATE,
+        e2.END_DATE AS REPO_EMPLOYEE_ENDDATE,
+        e2.STATUS AS REPO_EMPLOYEE_STATUS,
+        e2.RESUME AS REPO_EMPLOYEE_RESUME,
+        pi2.NAME AS REPO_EMPLOYEE_NAME,
+        pi2.GENDER AS REPO_EMPLOYEE_GENDER,
+        pi2.NATIONALITY AS REPO_EMPLOYEE_NATIONALITY,
+        pi2.BIRTHDAY AS REPO_EMPLOYEE_BIRTHDAY,
+        pi2.BIRTHPLACE AS REPO_EMPLOYEE_BIRTHPLACE,
+        pi2.POLITICALSTATUS AS REPO_EMPLOYEE_POLITICALSTATUS,
+        pi2.TEL AS REPO_EMPLOYEE_TEL,
+        pi2.EMAIL AS REPO_EMPLOYEE_EMAIL,
+        c.NAME AS COMPANY_NAME,
+        c.TEL AS COMPANY_TEL
+        FROM "SalesOrder" so
+        LEFT JOIN "Product" p ON so.PRODUCT_ID = p.ID
+        LEFT JOIN "Employee" e1 ON so.SALES_EMPLOYEE_ID = e1.ID
+        LEFT JOIN "Employee" e2 ON so.REPO_EMPLOYEE_ID = e2.ID
+        LEFT JOIN "Company" c ON so.COMPANY_ID = c.ID
+        LEFT JOIN "Person" pi1 ON e1.PERSON_ID = pi1.ID
+        LEFT JOIN "Person" pi2 ON e2.PERSON_ID = pi2.ID
+        WHERE 1=1
+        <if test="employeeId != null and employeeId != ''">
+            AND e1.ID = #{employeeId}
+        </if>
+        <if test="employeeName != null and employeeName != ''">
+            AND pi1.NAME LIKE '%' || #{employeeName} || '%'
+        </if>
+        <if test="id != null and id != ''">
+            so.ID = #{id}
+        </if>
+        <if test="productName != null and productName != ''">
+            AND so.PRODUCT_NAME LIKE '%' || #{productName} || '%'
+        </if>
+        <if test="companyName != null and companyName != ''">
+            AND c.NAME LIKE '%' || #{companyName} || '%'
+        </if>
+        <if test="destination != null and destination != ''">
+            AND so.DESTINATION LIKE '%' || #{destination} || '%'
+        </if>
+        <if test="status != null and status != ''">
+            AND so.STATUS LIKE '%' || #{status} || '%'
+        </if>
+        <if test="startDate != null">
+            AND APPLY_DATE &gt;= #{startDate, jdbcType=DATE, typeHandler=org.apache.ibatis.type.LocalDateTypeHandler}
+        </if>
+        <if test="endDate != null">
+            AND APPLY_DATE &lt;= #{endDate, jdbcType=DATE, typeHandler=org.apache.ibatis.type.LocalDateTypeHandler}
+        </if>
+    </select>
+
+    <select id="findSalesOrderById" resultMap="SalesOrderResultMap">
+        SELECT
+        so.ID AS ID,
+        so.PRODUCT_ID AS PRODUCT_ID,
+        so.SALES_EMPLOYEE_ID AS SALES_EMPLOYEE_ID,
+        so.COMPANY_ID AS COMPANY_ID,
+        so.REPO_EMPLOYEE_ID AS REPO_EMPLOYEE_ID,
+        so.QUANTITY AS QUANTITY,
+        so.CONTRACT AS CONTRACT,
+        so.APPLY_DATE AS APPLY_DATE,
+        so.DESTINATION AS DESTINATION,
+        so.STATUS AS STATUS,
+        so.PRODUCT_NAME AS SO_PRODUCT_NAME,
+        so.DESCRIPTION AS DESCRIPTION,
+        p.NAME AS PRODUCT_NAME,
+        p.PRICE AS PRICE,
+        p.INVENTORY AS INVENTORY,
+        p.REMAINING AS REMAINING,
+        p.MATERIAL_ID AS MATERIAL_ID,
+        p.MATERIAL_CONSUME AS MATERIAL_CONSUME,
+        e1.PASSWORD AS SALES_EMPLOYEE_PASSWORD,
+        e1.DEPARTMENT AS SALES_EMPLOYEE_DEPARTMENT,
+        e1.POSITION AS SALES_EMPLOYEE_POSITION,
+        e1.START_DATE AS SALES_EMPLOYEE_STARTDATE,
+        e1.END_DATE AS SALES_EMPLOYEE_ENDDATE,
+        e1.STATUS AS SALES_EMPLOYEE_STATUS,
+        e1.RESUME AS SALES_EMPLOYEE_RESUME,
+        pi1.NAME AS SALES_EMPLOYEE_NAME,
+        pi1.GENDER AS SALES_EMPLOYEE_GENDER,
+        pi1.NATIONALITY AS SALES_EMPLOYEE_NATIONALITY,
+        pi1.BIRTHDAY AS SALES_EMPLOYEE_BIRTHDAY,
+        pi1.BIRTHPLACE AS SALES_EMPLOYEE_BIRTHPLACE,
+        pi1.POLITICALSTATUS AS SALES_EMPLOYEE_POLITICALSTATUS,
+        pi1.TEL AS SALES_EMPLOYEE_TEL,
+        pi1.EMAIL AS SALES_EMPLOYEE_EMAIL,
+        e2.PASSWORD AS REPO_EMPLOYEE_PASSWORD,
+        e2.DEPARTMENT AS REPO_EMPLOYEE_DEPARTMENT,
+        e2.POSITION AS REPO_EMPLOYEE_POSITION,
+        e2.START_DATE AS REPO_EMPLOYEE_STARTDATE,
+        e2.END_DATE AS REPO_EMPLOYEE_ENDDATE,
+        e2.STATUS AS REPO_EMPLOYEE_STATUS,
+        e2.RESUME AS REPO_EMPLOYEE_RESUME,
+        pi2.NAME AS REPO_EMPLOYEE_NAME,
+        pi2.GENDER AS REPO_EMPLOYEE_GENDER,
+        pi2.NATIONALITY AS REPO_EMPLOYEE_NATIONALITY,
+        pi2.BIRTHDAY AS REPO_EMPLOYEE_BIRTHDAY,
+        pi2.BIRTHPLACE AS REPO_EMPLOYEE_BIRTHPLACE,
+        pi2.POLITICALSTATUS AS REPO_EMPLOYEE_POLITICALSTATUS,
+        pi2.TEL AS REPO_EMPLOYEE_TEL,
+        pi2.EMAIL AS REPO_EMPLOYEE_EMAIL,
+        c.NAME AS COMPANY_NAME,
+        c.TEL AS COMPANY_TEL
+        FROM "SalesOrder" so
+        LEFT JOIN "Product" p ON so.PRODUCT_ID = p.ID
+        LEFT JOIN "Employee" e1 ON so.SALES_EMPLOYEE_ID = e1.ID
+        LEFT JOIN "Employee" e2 ON so.REPO_EMPLOYEE_ID = e2.ID
+        LEFT JOIN "Company" c ON so.COMPANY_ID = c.ID
+        LEFT JOIN "Person" pi1 ON e1.PERSON_ID = pi1.ID
+        LEFT JOIN "Person" pi2 ON e2.PERSON_ID = pi2.ID
+        WHERE so.ID = #{id}
+    </select>
+
+    <resultMap id="SalesOrderResultMap" type="com.changing.erpsystembackend.entity.SalesOrder">
+        <id property="id" column="ID" />
+        <result property="productId" column="PRODUCT_ID" />
+        <result property="salesEmployeeId" column="SALES_EMPLOYEE_ID" />
+        <result property="companyId" column="COMPANY_ID" />
+        <result property="repoEmployeeId" column="REPO_EMPLOYEE_ID" />
+        <result property="quantity" column="QUANTITY" />
+        <result property="contract" column="CONTRACT" />
+        <result property="applyDate" column="APPLY_DATE" />
+        <result property="destination" column="DESTINATION" />
+        <result property="status" column="STATUS" />
+        <result property="productName" column="SO_PRODUCT_NAME" />
+        <result property="description" column="DESCRIPTION" />
+        <association property="product" javaType="com.changing.erpsystembackend.entity.Product">
+            <id property="id" column="PRODUCT_ID" />
+            <result property="name" column="PRODUCT_NAME" />
+            <result property="price" column="PRICE" />
+            <result property="inventory" column="INVENTORY" />
+            <result property="remaining" column="REMAINING" />
+            <result property="materialId" column="MATERIAL_ID" />
+            <result property="materialConsume" column="MATERIAL_CONSUME" />
+        </association>
+        <association property="salesEmployee" javaType="com.changing.erpsystembackend.entity.Employee">
+            <id property="id" column="SALES_EMPLOYEE_ID" />
+            <result property="password" column="SALES_EMPLOYEE_PASSWORD" />
+            <result property="department" column="SALES_EMPLOYEE_DEPARTMENT" />
+            <result property="position" column="SALES_EMPLOYEE_POSITION" />
+            <result property="startDate" column="SALES_EMPLOYEE_STARTDATE" />
+            <result property="endDate" column="SALES_EMPLOYEE_ENDDATE" />
+            <result property="status" column="SALES_EMPLOYEE_STATUS" />
+            <result property="resume" column="SALES_EMPLOYEE_RESUME" />
+            <association property="person" javaType="com.changing.erpsystembackend.entity.Person">
+                <id property="id" column="PERSON_ID" />
+                <result property="name" column="SALES_EMPLOYEE_NAME" />
+                <result property="gender" column="SALES_EMPLOYEE_GENDER" />
+                <result property="nationality" column="SALES_EMPLOYEE_NATIONALITY" />
+                <result property="birthday" column="SALES_EMPLOYEE_BIRTHDAY" />
+                <result property="birthplace" column="SALES_EMPLOYEE_BIRTHPLACE" />
+                <result property="politicalStatus" column="SALES_EMPLOYEE_POLITICALSTATUS" />
+                <result property="tel" column="SALES_EMPLOYEE_TEL" />
+                <result property="email" column="SALES_EMPLOYEE_EMAIL" />
+            </association>
+        </association>
+        <association property="company" javaType="com.changing.erpsystembackend.entity.Company">
+            <id property="id" column="COMPANY_ID" />
+            <result property="name" column="COMPANY_NAME" />
+            <result property="tel" column="COMPANY_TEL" />
+        </association>
+        <association property="repoEmployee" javaType="com.changing.erpsystembackend.entity.Employee">
+            <id property="id" column="REPO_EMPLOYEE_ID" />
+            <result property="password" column="REPO_EMPLOYEE_PASSWORD" />
+            <result property="department" column="REPO_EMPLOYEE_DEPARTMENT" />
+            <result property="position" column="REPO_EMPLOYEE_POSITION" />
+            <result property="startDate" column="REPO_EMPLOYEE_STARTDATE" />
+            <result property="endDate" column="REPO_EMPLOYEE_ENDDATE" />
+            <result property="status" column="REPO_EMPLOYEE_STATUS" />
+            <result property="resume" column="REPO_EMPLOYEE_RESUME" />
+            <association property="person" javaType="com.changing.erpsystembackend.entity.Person">
+                <id property="id" column="PERSON_ID" />
+                <result property="name" column="REPO_EMPLOYEE_NAME" />
+                <result property="gender" column="REPO_EMPLOYEE_GENDER" />
+                <result property="nationality" column="REPO_EMPLOYEE_NATIONALITY" />
+                <result property="birthday" column="REPO_EMPLOYEE_BIRTHDAY" />
+                <result property="birthplace" column="REPO_EMPLOYEE_BIRTHPLACE" />
+                <result property="politicalStatus" column="REPO_EMPLOYEE_POLITICALSTATUS" />
+                <result property="tel" column="REPO_EMPLOYEE_TEL" />
+                <result property="email" column="REPO_EMPLOYEE_EMAIL" />
+            </association>
+        </association>
+    </resultMap>
 </mapper>

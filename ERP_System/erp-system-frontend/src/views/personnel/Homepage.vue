@@ -7,7 +7,7 @@
       </div>
       <div class="header-right">
         <img :src="employee.avatar || defaultAvatar" alt="User Avatar" class="avatar">
-        <span class="welcome-text">欢迎您: {{ employee.name }}</span>
+        <span class="welcome-text">欢迎您: {{ employee.id }}</span>
       </div>
     </div>
 
@@ -65,7 +65,7 @@
 <script setup>
 import { useRoute } from 'vue-router'
 const defaultAvatar = 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
-const employee = JSON.parse(localStorage.getItem('employee') || '{}')
+const employee = JSON.parse(localStorage.getItem('user') || '{}')
 const $route = useRoute()
 const logout = () => {
   localStorage.removeItem('employee')

@@ -13,8 +13,14 @@
         <el-form-item label="数量" prop="quantity">
           <el-input v-model="form.quantity" class="el-input" placeholder="请输入数量" type="number"></el-input>
         </el-form-item>
-        <el-form-item label="公司" prop="companyName">
+        <el-form-item label="公司名称" prop="companyName">
           <el-input v-model="form.companyName" class="el-input" placeholder="请输入公司名称"></el-input>
+        </el-form-item>
+        <el-form-item label="公司联系方式" prop="companyTel">
+          <el-input v-model="form.companyTel" class="el-input" placeholder="请输入公司联系方式" type="number"></el-input>
+        </el-form-item>
+        <el-form-item label="目的地" prop="destination">
+          <el-input v-model="form.destination" class="el-input" placeholder="请输入目的地"></el-input>
         </el-form-item>
         <el-form-item label="订单描述" prop="description">
           <el-input type="textarea" v-model="form.description" placeholder="请输入订单描述"></el-input>
@@ -24,10 +30,10 @@
               class="upload-demo"
               action="#"
               :file-list="form.contract"
-              :on-preview="handlePreview"
               :on-remove="handleRemove"
               :before-upload="beforeUpload"
-              :auto-upload="false">
+              :auto-upload="false"
+              :on-change="handleUploadChange">
             <el-button type="primary">点击上传</el-button>
           </el-upload>
         </el-form-item>
@@ -46,20 +52,26 @@ import { ElMessage, ElForm, ElButton, ElInput, ElAutocomplete, ElUpload } from '
 import axios from "axios";
 
 // 表单数据
+const employee = JSON.parse(localStorage.getItem('user') || '{}');
 const form = reactive({
+  salesEmployeeId:employee.id,
   productName: '',
   quantity: '',
   companyName: '',
+  companyTel: '',
+  destination: '',
   description: '',
   contract: [],
   contractData: '',
+  status: '',
 });
 const rules = {
   productName: [{ required: true, message: '请选择产品', trigger: 'blur' }],
   quantity: [{ required: true, message: '请输入产品数量', trigger: 'blur' }],
   companyName: [{ required: true, message: '请输入公司名称', trigger: 'blur' }],
+  companyTel: [{ required: true, message: '请输入公司联系方式', trigger: 'blur' }],
+  destination: [{ required: true, message: '请输入目的地', trigger: 'blur' }],
   description: [{ required: true, message: '请输入订单描述', trigger: 'blur' }],
-  contract: [{ required: true, message: '请上传合同', trigger: 'blur' }],
 };
 const products = ref([
   { ID: 1, NAME: '镀锌钢板' },
@@ -78,11 +90,9 @@ const products = ref([
   { ID: 14, NAME: '钢丝网卷' },
 ]);
 const querySearch = (queryString, cb) => {
-  console.log('查询字符串:', queryString);
   const results = products.value
       .filter(product => product.NAME.toLowerCase().includes(queryString.toLowerCase()))
       .map(product => ({ value: product.NAME }));
-  console.log('过滤结果:', results);
   cb(results);
 };
 const handleSelect = (item) => {
@@ -90,12 +100,11 @@ const handleSelect = (item) => {
 };
 
 // 上传合同文件
-const handlePreview = (file) => {
-  console.log('预览文件:', file);
-};
 const handleRemove = (file, fileList) => {
-  console.log('移除文件:', file, fileList);
   form.contract = fileList;
+  if (fileList.length === 0) {
+    form.contractData = '';
+  }
 };
 const beforeUpload = (file) => {
   const isPDF = file.type === 'application/pdf';
@@ -106,32 +115,43 @@ const beforeUpload = (file) => {
   if (!isLt10M) {
     ElMessage.error('上传的文件大小不能超过10MB!');
   }
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    form.contractData = e.target.result;
-  };
-  reader.readAsDataURL(file);
-  return isPDF && isLt10M;
+  if (isPDF && isLt10M) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      form.contractData = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+  return false;
+};
+const handleUploadChange = (file, fileList) => {
+  form.contract = fileList;
+  if (fileList.length > 0) {
+    console.log('Uploaded file response:', fileList[0].response);
+    form.contractData = fileList[0].response;
+  } else {
+    form.contractData = '';
+  }
 };
 
 // 提交和重置表单
 const formRef = ref(null);
 const submitOrder = () => {
   formRef.value.validate((valid) => {
+    if (employee.position === '部长') {
+      form.status = '等待仓储部审批';
+    } else {
+      form.status = '等待部长审批';
+    }
     if (valid) {
       axios.post('/api/sales/submitOrder', form)
           .then(response => {
+            console.log(response.data);
             const res = response.data;
-            if (res.success) {
-              ElMessage.success("订单提交成功");
-              resetOrder();
-            } else {
-              ElMessage.error("订单提交失败: " + res.message);
-            }
+            ElMessage.success("订单提交成功");
           })
           .catch(error => {
             ElMessage.error("订单提交失败");
-            console.error('Error submitting order:', error);
           });
     } else {
       ElMessage.error('表单验证失败!');
@@ -141,6 +161,7 @@ const submitOrder = () => {
 };
 const resetOrder = () => {
   formRef.value.resetFields();
+  form.salesEmployeeId = employee.id;
   form.contract = [];
   form.contractData = '';
 };

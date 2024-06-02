@@ -18,5 +18,5 @@ public class Employee {
     private String password;
     private String resume;
 
-    private PersonalInformation personalInformation;
+    private Person person;
 }

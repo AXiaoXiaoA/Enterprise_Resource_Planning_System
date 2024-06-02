@@ -1,13 +1,3 @@
-<script setup>
-import { useRoute } from 'vue-router';
-const defaultAvatar = 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png';
-const user = JSON.parse(localStorage.getItem('user') || '{}');
-const $route = useRoute();
-const logout = () => {
-  localStorage.removeItem('user');
-}
-</script>
-
 <template>
   <div>
     <div class="header">
@@ -16,8 +6,8 @@ const logout = () => {
         <div class="title">轧钢厂管理系统</div>
       </div>
       <div class="header-right">
-        <img :src="user.avatar || defaultAvatar" alt="User Avatar" class="avatar">
-        <span class="user-info">销售部: {{ user.name }}</span>
+        <img :src="employee.avatar || defaultAvatar" alt="User Avatar" class="avatar">
+        <span class="user-info">销售部: {{ employee.person.name }}</span>
       </div>
     </div>
 
@@ -41,12 +31,8 @@ const logout = () => {
             <el-icon><Document /></el-icon>
             <span>提交订单</span>
           </el-menu-item>
-          <el-menu-item index="/sales/OrderProcess">
-            <el-icon><Document /></el-icon>
-            <span>处理订单</span>
-          </el-menu-item>
 
-          <el-menu-item index="/person" v-if="user.role === 'STUDENT'">
+          <el-menu-item index="/person" v-if="employee.position === 'sales'">
             <el-icon><User /></el-icon>
             <span>用户信息</span>
           </el-menu-item>
@@ -63,5 +49,18 @@ const logout = () => {
     </div>
   </div>
 </template>
+
+<script setup>
+import { useRoute } from 'vue-router';
+import {User} from "@element-plus/icons-vue";
+import router from "@/router/index.js";
+
+const defaultAvatar = 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png';
+const employee = JSON.parse(localStorage.getItem('user') || '{}');
+const $route = useRoute();
+const logout = () => {
+  localStorage.removeItem('employee');
+}
+</script>
 
 <style lang="scss" scoped src="@/styles/homepage.css"></style>

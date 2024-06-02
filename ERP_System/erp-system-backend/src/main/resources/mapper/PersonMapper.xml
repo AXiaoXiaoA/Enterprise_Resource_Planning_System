@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.changing.erpsystembackend.mapper.PersonMapper">
+    <!-- Insert -->
+    <insert id="insertPerson" parameterType="com.changing.erpsystembackend.entity.Person">
+        INSERT INTO "Person" (ID, NAME, GENDER, NATIONALITY, BIRTHDAY, BIRTHPLACE, POLITICALSTATUS, TEL, EMAIL)
+        VALUES (#{id}, #{name}, #{gender}, #{nationality}, #{birthday}, #{birthplace}, #{politicalStatus}, #{tel}, #{email})
+    </insert>
+
+    <!-- Select -->
+    <select id="findEmployeeByID" parameterType="java.lang.String" resultType="com.changing.erpsystembackend.entity.Person">
+        SELECT *
+        FROM "Person"
+        WHERE ID = #{id}
+    </select>
+</mapper>

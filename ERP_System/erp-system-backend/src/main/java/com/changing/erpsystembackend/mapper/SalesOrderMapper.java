@@ -1,11 +1,24 @@
 package com.changing.erpsystembackend.mapper;
 
+import com.changing.erpsystembackend.dto.sales.CheckSalesOrderRequestDTO;
+import com.changing.erpsystembackend.dto.sales.SearchSalesOrderRequestDTO;
 import com.changing.erpsystembackend.entity.SalesOrder;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 @Mapper
 public interface SalesOrderMapper {
     // insert
     void insertSalesOrder(SalesOrder salesOrder);
+
+    // update
+    boolean checkSalesOrder(CheckSalesOrderRequestDTO checkSalesOrderRequest);
+
+    // select
+    List<SalesOrder> findSalesOrder(SearchSalesOrderRequestDTO searchSalesOrderRequest);
+    List<SalesOrder> findSalesOrderById(Long id);
+    List<SalesOrder> findSalesContractById(@Param("id") int id);
 }

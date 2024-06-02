@@ -1,6 +1,6 @@
 package com.changing.erpsystembackend.dto.personnel;
 
-public class ResumeAnalysisRequest {
+public class ResumeAnalysisRequestDTO {
 	String content;
 	public String getContent() {
 		return content;

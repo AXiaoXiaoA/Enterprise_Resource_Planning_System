@@ -1,5 +1,6 @@
 package com.changing.erpsystembackend.mapper;
 
+import com.changing.erpsystembackend.dto.personnel.SearchEmployeeRequestDTO;
 import com.changing.erpsystembackend.entity.Employee;
 
 import org.apache.ibatis.annotations.Mapper;
@@ -26,7 +27,7 @@ public interface EmployeeMapper {
     List<Map<String, Object>> getAgeDistribution();
     List<Map<String, Object>> getDepartmentDistribution();
     int getApplyDistribution();
-    List<Employee> searchEmployee(@Param("searchCriteria") Map<String, String> searchCriteria);
+    List<Employee> findEmployee(SearchEmployeeRequestDTO searchEmployeeRequest);
     @Results({@Result(column = "resume", property = "resume", jdbcType = JdbcType.CLOB, typeHandler = ClobTypeHandler.class)})
-    String searchResumeById(int id);
+    String findResumeById(int id);
 }

@@ -40,7 +40,7 @@
             </template>
           </el-table-column>
         </el-table>
-        <div v-else class="no-data">No data available</div>
+        <div v-else class="no-data">暂无数据</div>
       </div>
       <div class="pagination-box">
         <el-pagination background layout="prev, pager, next" :total="totalItems" :page-size="pageSize" @current-change="handlePageChange"/>
@@ -106,29 +106,31 @@ const departmentMap = {
   production: '生产部',
   purchasing: '采购部'
 };
-const positionMap = {
-  manager: '总经理',
-  worker: '职员'
-};
-const genderMap = {
-  male: '男',
-  female: '女'
-};
 const statusMap = {
   reject: '已拒绝',
   apply: '应聘中'
 };
+const searchCriteria = reactive({
+  id: '',
+  name: '',
+  department: '',
+  position: '',
+  gender: '',
+  ageStart: '',
+  ageEnd: '',
+  status: 'apply'
+});
 const loadData = (page = 1) => {
-  axios.get('/api/personnel/searchAllApply', { params: searchCriteria })
+  axios.post('/api/personnel/searchApply', searchCriteria)
       .then(response => {
         const res = response.data;
         tableData.items = res.data.map(item => ({
           id: item.id,
-          name: item.personalInformation.name,
-          gender: genderMap[item.personalInformation.gender] || item.personalInformation.gender,
-          age: new Date().getFullYear() - new Date(item.personalInformation.birthday).getFullYear(),
+          name: item.person.name,
+          gender: item.person.gender,
+          age: new Date().getFullYear() - new Date(item.persona.birthday).getFullYear(),
           department: departmentMap[item.department] || item.department,
-          position: positionMap[item.position] || item.position,
+          position: item.position,
           status: statusMap[item.status] || item.status,
           applyDate: item.startDate,
         }));
@@ -140,25 +142,15 @@ const loadData = (page = 1) => {
 };
 
 // 查找应聘者
-const searchCriteria = reactive({
-  id: '',
-  name: '',
-  department: '',
-  position: '',
-  gender: '',
-  ageStart: '',
-  ageEnd: '',
-  status: 'apply'
-});
 const search = () => {
-  axios.get('/api/personnel/searchApply', { params: searchCriteria })
+  axios.post('/api/personnel/searchApply', searchCriteria)
       .then(response => {
         const res = response.data;
         tableData.items = res.data.map(item => ({
           id: item.id,
-          name: item.personalInformation.name,
-          gender: genderMap[item.personalInformation.gender] || item.personalInformation.gender,
-          age: new Date().getFullYear() - new Date(item.personalInformation.birthday).getFullYear(),
+          name: item.person.name,
+          gender: genderMap[item.person.gender] || item.person.gender,
+          age: new Date().getFullYear() - new Date(item.person.birthday).getFullYear(),
           department: departmentMap[item.department] || item.department,
           position: positionMap[item.position] || item.position,
           status: statusMap[item.status] || item.status,
@@ -232,7 +224,7 @@ const getFavor = () => {
   }
 };
 
-// 聘用员工
+// 审核申请
 const acceptApply = ()=>{
   axios.post('/api/personnel/acceptApply',null,{ params: { id: selectedId.value } })
       .then(res=>{

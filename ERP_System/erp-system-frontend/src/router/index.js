@@ -43,9 +43,6 @@ const router = createRouter({
         },
         {
           path:'/sales/OrderSubmit',name:'sales_orderSubmit',component:()=>import('@/views/sales/OrderSubmit.vue')
-        },
-        {
-          path:'/sales/OrderProcess',name:'sales_orderProcess',component:()=>import('@/views/sales/OrderProcess.vue')
         }
       ]
     },

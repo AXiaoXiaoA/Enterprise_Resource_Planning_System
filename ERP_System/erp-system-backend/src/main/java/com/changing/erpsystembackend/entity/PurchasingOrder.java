@@ -18,4 +18,5 @@ public class PurchasingOrder {
     private java.sql.Date applyDate;
     private String status;
     private String materialName;
+    private String description;
 }

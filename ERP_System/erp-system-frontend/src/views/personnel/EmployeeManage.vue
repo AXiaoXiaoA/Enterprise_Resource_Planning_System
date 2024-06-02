@@ -40,7 +40,7 @@
             </template>
           </el-table-column>
         </el-table>
-        <div v-else class="no-data">No data available</div>
+        <div v-else class="no-data">暂无数据</div>
       </div>
 
       <div class="pagination-box">
@@ -95,14 +95,14 @@ const statusMap = {
   join: '在职'
 };
 const loadData = (page = 1) => {
-  axios.get('/api/personnel/searchAllEmployee', { params: searchCriteria })
+  axios.post('/api/personnel/searchEmployee', searchCriteria)
       .then(response => {
         const res = response.data;
         tableData.items = res.data.map(item => ({
           id: item.id,
-          name: item.personalInformation.name,
-          gender: genderMap[item.personalInformation.gender] || item.personalInformation.gender,
-          age: new Date().getFullYear() - new Date(item.personalInformation.birthday).getFullYear(),
+          name: item.person.name,
+          gender: genderMap[item.person.gender] || item.person.gender,
+          age: new Date().getFullYear() - new Date(item.person.birthday).getFullYear(),
           department: departmentMap[item.department] || item.department,
           position: positionMap[item.position] || item.position,
           status: statusMap[item.status] || item.status,
@@ -126,14 +126,14 @@ const searchCriteria = reactive({
   status: 'join'
 });
 const search = () => {
-  axios.get('/api/personnel/searchEmployee', { params: searchCriteria })
+  axios.post('/api/personnel/searchEmployee', searchCriteria)
       .then(response => {
         const res = response.data;
         tableData.items = res.data.map(item => ({
           id: item.id,
-          name: item.personalInformation.name,
-          gender: genderMap[item.personalInformation.gender] || item.personalInformation.gender,
-          age: new Date().getFullYear() - new Date(item.personalInformation.birthday).getFullYear(),
+          name: item.person.name,
+          gender: genderMap[item.person.gender] || item.person.gender,
+          age: new Date().getFullYear() - new Date(item.person.birthday).getFullYear(),
           department: departmentMap[item.department] || item.department,
           position: positionMap[item.position] || item.position,
           status: statusMap[item.status] || item.status,

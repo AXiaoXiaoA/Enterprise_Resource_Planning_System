@@ -1,5 +1,6 @@
 package com.changing.erpsystembackend.service;
 
+import com.changing.erpsystembackend.dto.personnel.SearchEmployeeRequestDTO;
 import com.changing.erpsystembackend.entity.Employee;
 import com.changing.erpsystembackend.mapper.EmployeeMapper;
 
@@ -13,7 +14,7 @@ import java.util.Map;
 @Service
 public class PersonnelService {
     @Autowired
-    EmployeeMapper employeeMapper;
+    private EmployeeMapper employeeMapper;
 
     // Home
     public int getEmployeeDistribution() {
@@ -30,14 +31,8 @@ public class PersonnelService {
     }
 
     // ApplyCheck
-    public List<Employee> searchAllApply(Map<String, String> searchCriteria){
-        return employeeMapper.searchEmployee(searchCriteria);
-    }
-    public List<Employee> searchApply(Map<String, String> searchCriteria) {
-        return employeeMapper.searchEmployee(searchCriteria);
-    }
-    public String searchResume(int selectedId){
-        return employeeMapper.searchResumeById(selectedId);
+    public String searchResume(int id){
+        return employeeMapper.findResumeById(id);
     }
     public String executePythonScript(String text) {
         String scriptPath = "D:\\陆\\大创\\test.py";
@@ -73,10 +68,7 @@ public class PersonnelService {
     }
 
     // EmployeeManage
-    public List<Employee> searchAllEmployee(Map<String, String> searchCriteria) {
-        return employeeMapper.searchEmployee(searchCriteria);
-    }
-    public List<Employee> searchEmployee(Map<String, String> searchCriteria) {
-        return employeeMapper.searchEmployee(searchCriteria);
+    public List<Employee> searchEmployee(SearchEmployeeRequestDTO searchEmployeeRequest) {
+        return employeeMapper.findEmployee(searchEmployeeRequest);
     }
 }

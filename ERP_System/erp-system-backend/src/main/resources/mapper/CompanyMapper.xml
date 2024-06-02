@@ -3,6 +3,16 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.changing.erpsystembackend.mapper.CompanyMapper">
+    <!-- Insert -->
+    <insert id="insertCompany" parameterType="com.changing.erpsystembackend.entity.Company">
+        INSERT INTO "Company" (ID, NAME, TEL)
+        VALUES (COMPANY_ID_SEQ.NEXTVAL, #{name}, #{tel})
+    </insert>
 
-
+    <!-- Select -->
+    <select id="findCompanyIdByName" parameterType="java.lang.String" resultType="java.lang.Long">
+        SELECT ID
+        FROM "Company"
+        WHERE NAME = #{name}
+    </select>
 </mapper>

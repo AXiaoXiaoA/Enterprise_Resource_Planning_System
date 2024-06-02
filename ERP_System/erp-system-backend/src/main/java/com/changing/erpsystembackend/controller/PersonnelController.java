@@ -1,7 +1,8 @@
 package com.changing.erpsystembackend.controller;
 
 import com.changing.erpsystembackend.common.Result;
-import com.changing.erpsystembackend.dto.personnel.ResumeAnalysisRequest;
+import com.changing.erpsystembackend.dto.personnel.ResumeAnalysisRequestDTO;
+import com.changing.erpsystembackend.dto.personnel.SearchEmployeeRequestDTO;
 import com.changing.erpsystembackend.service.PersonnelService;
 
 import jakarta.annotation.Resource;
@@ -33,20 +34,16 @@ public class PersonnelController {
 	}
 
 	// ApplyReview
-	@GetMapping("/searchAllApply")
-	public Result showAllApply(@RequestParam Map<String, String> searchCriteria) {
-		return Result.success(personnelService.searchAllApply(searchCriteria));
-	}
-	@GetMapping("/searchApply")
-	public Result searchApply(@RequestParam Map<String, String> searchCriteria) {
-		return Result.success(personnelService.searchApply(searchCriteria));
+	@PostMapping("/searchApply")
+	public Result searchApply(@RequestBody SearchEmployeeRequestDTO searchEmployeeRequest) {
+		return Result.success(personnelService.searchEmployee(searchEmployeeRequest));
 	}
 	@GetMapping("/searchResume")
 	public Result searchResume(@RequestParam("id") int id) {
 		return Result.success(personnelService.searchResume(id));
 	}
 	@PostMapping("/analysis")
-	public Result outWroughtIron(@RequestBody ResumeAnalysisRequest requestText){
+	public Result outWroughtIron(@RequestBody ResumeAnalysisRequestDTO requestText){
 		String text = requestText.getContent();
 		if( text == null || text.isEmpty()){
 			return Result.error("无效输入，无法进行分析！");
@@ -57,7 +54,7 @@ public class PersonnelController {
 		}
 	}
 	@PostMapping("/acceptApply")
-	public Result accept(@RequestParam("id") int id){
+	public Result acceptApply(@RequestParam("id") int id){
 		if(personnelService.acceptApply(id)){
 			return Result.success("聘用成功");
 		}else{
@@ -65,7 +62,7 @@ public class PersonnelController {
 		}
 	}
 	@PostMapping("/rejectApply")
-	public Result reject(@RequestParam("id") int id){
+	public Result rejectApply(@RequestParam("id") int id){
 		if(personnelService.rejectApply(id)){
 			return Result.success("拒绝成功");
 		}else{
@@ -74,12 +71,8 @@ public class PersonnelController {
 	}
 
 	// EmployeeManagement
-	@GetMapping("/searchAllEmployee")
-	public Result showAllEmployee(@RequestParam Map<String, String> searchCriteria) {
-		return Result.success(personnelService.searchAllEmployee(searchCriteria));
-	}
-	@GetMapping("/searchEmployee")
-	public Result searchEmployee(@RequestParam Map<String, String> searchCriteria) {
-		return Result.success(personnelService.searchEmployee(searchCriteria));
+	@PostMapping("/searchEmployee")
+	public Result searchEmployee(@RequestBody SearchEmployeeRequestDTO searchEmployeeRequest) {
+		return Result.success(personnelService.searchEmployee(searchEmployeeRequest));
 	}
 }

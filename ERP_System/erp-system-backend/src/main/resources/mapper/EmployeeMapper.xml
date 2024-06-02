@@ -12,7 +12,7 @@
     <!-- Update -->
     <update id="acceptApply" parameterType="int">
         UPDATE "Employee"
-        SET STATUS = 'join'
+        SET STATUS = 'join', PASSWORD = '123'
         WHERE ID = #{id}
     </update>
 
@@ -23,11 +23,10 @@
     </update>
 
     <!-- Select-->
-    <select id="findEmployeeByTelAndPassword" parameterType="map" resultType="com.changing.erpsystembackend.entity.Employee">
-        SELECT e.*
-        FROM "Employee" e
-            LEFT JOIN "PersonalInformation" p
-                ON e.PERSON_ID = p.ID
+    <select id="findEmployeeByTelAndPassword" parameterType="map" resultMap="EmployeeResultMap">
+        SELECT e.ID AS employee_id, e.PASSWORD AS PASSWORD, e.DEPARTMENT AS DEPARTMENT, e.POSITION AS POSITION, e.START_DATE AS START_DATE, e.END_DATE AS END_DATE, e.STATUS AS STATUS, e.RESUME AS RESUM, e.PERSON_ID AS PERSON_ID,
+                p.ID AS person_id, p.NAME AS NAME, p.GENDER AS GENDER, p.NATIONALITY AS NATIONALITY, p.BIRTHDAY AS BIRTHDAY, p.BIRTHPLACE AS BIRTHPLACE, p.POLITICALSTATUS AS POLITICALSTATUS, p.TEL AS TEL, p.EMAIL AS EMAIL
+        FROM "Employee" e LEFT JOIN "Person" p ON e.PERSON_ID = p.ID
         WHERE p.TEL = #{tel} AND e.PASSWORD = #{password}
     </select>
 
@@ -39,7 +38,7 @@
 
     <select id="getAgeDistribution" resultType="java.util.Map">
         SELECT COUNT(*) AS count, FLOOR(MONTHS_BETWEEN(SYSDATE, BIRTHDAY) / 12 / 5) * 5 AS age_bracket
-        FROM "PersonalInformation" p
+        FROM "Person" p
             JOIN "Employee" e ON p.ID = e.PERSON_ID
         WHERE e.STATUS = 'join'
         GROUP BY FLOOR(MONTHS_BETWEEN(SYSDATE, BIRTHDAY) / 12 / 5) * 5
@@ -59,43 +58,37 @@
         WHERE status = 'apply'
     </select>
 
-    <select id="searchEmployee" resultMap="EmployeeResultMap">
+    <select id="findEmployee" parameterType="com.changing.erpsystembackend.dto.personnel.SearchEmployeeRequestDTO" resultMap="EmployeeResultMap">
         SELECT e.ID as employee_id, e.DEPARTMENT, e.POSITION, e.STARTDATE, e.STATUS, e.RESUME, p.NAME, p.GENDER, p.BIRTHDAY
-        FROM "Employee" e LEFT JOIN "PersonalInformation" p ON e.PERSON_ID = p.ID
+        FROM "Employee" e LEFT JOIN "Person" p ON e.PERSON_ID = p.ID
         WHERE 1=1
-        <if test="searchCriteria.id != null and searchCriteria.id != ''">
-            AND e.ID = #{searchCriteria.id}
+        <if test="id != null and id != ''">
+            AND e.ID = #{id}
         </if>
-        <if test="searchCriteria.name != null and searchCriteria.name != ''">
-            AND p.NAME LIKE '%' || #{searchCriteria.name} || '%'
+        <if test="department != null and department != ''">
+            AND e.DEPARTMENT = #{department}
         </if>
-        <if test="searchCriteria.department != null and searchCriteria.department != ''">
-            AND e.DEPARTMENT = #{searchCriteria.department}
+        <if test="position != null and position != ''">
+            AND e.POSITION = #{position}
         </if>
-        <if test="searchCriteria.position != null and searchCriteria.position != ''">
-            AND e.POSITION = #{searchCriteria.position}
+        <if test="gender != null and gender != ''">
+            AND p.GENDER = #{gender}
         </if>
-        <if test="searchCriteria.ageStart != null and searchCriteria.ageStart != ''">
-            AND MONTHS_BETWEEN(SYSDATE, p.BIRTHDAY) / 12 >= #{searchCriteria.ageStart}
+        <if test="status != null and status != ''">
+            AND e.STATUS = #{status}
         </if>
-        <if test="searchCriteria.ageEnd != null and searchCriteria.ageEnd != ''">
-            AND MONTHS_BETWEEN(SYSDATE, p.BIRTHDAY) / 12 &lt;= #{searchCriteria.ageEnd}
+        <if test="name != null and name != ''">
+            AND p.NAME LIKE '%' || #{name} || '%'
         </if>
-        <if test="searchCriteria.gender != null and searchCriteria.gender != ''">
-            AND p.GENDER = #{searchCriteria.gender}
+        <if test="ageStart != null">
+            AND TIMESTAMPDIFF(YEAR, p.BIRTHDAY, CURDATE()) &gt;= #{ageStart}
         </if>
-        <if test="searchCriteria.status == null or searchCriteria.status == ''">
-            AND e.STATUS = 'apply'
-        </if>
-        <if test="searchCriteria.status == 'apply'">
-            AND e.STATUS = 'apply'
-        </if>
-        <if test="searchCriteria.status == 'reject'">
-            AND (e.STATUS = 'apply' OR e.STATUS = 'reject')
+        <if test="ageEnd != null">
+            AND TIMESTAMPDIFF(YEAR, p.BIRTHDAY, CURDATE()) &lt;= #{ageEnd}
         </if>
     </select>
 
-    <select id="searchResumeById" resultType="java.lang.String">
+    <select id="findResumeById" resultType="java.lang.String">
         SELECT RESUME
         FROM "Employee"
         WHERE ID = #{id}
@@ -106,13 +99,13 @@
         <result column="PASSWORD" property="password"/>
         <result column="DEPARTMENT" property="department"/>
         <result column="POSITION" property="position"/>
-        <result column="STARTDATE" property="startDate"/>
-        <result column="ENDDATE" property="endDate"/>
+        <result column="START_DATE" property="startDate"/>
+        <result column="END_DATE" property="endDate"/>
         <result column="STATUS" property="status"/>
         <result column="RESUME" property="resume"/>
         <result column="PERSON_ID" property="personId"/>
-        <association property="personalInformation" javaType="com.changing.erpsystembackend.entity.PersonalInformation">
-            <id column="personalInformation_id" property="id"/>
+        <association property="person" javaType="com.changing.erpsystembackend.entity.Person">
+            <id column="person_id" property="id"/>
             <result column="NAME" property="name"/>
             <result column="GENDER" property="gender"/>
             <result column="NATIONALITY" property="nationality"/>
