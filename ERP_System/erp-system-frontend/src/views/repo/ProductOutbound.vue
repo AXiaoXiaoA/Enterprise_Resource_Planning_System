@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="search-box">
-      <el-input v-if="employee.position === '部长'" placeholder="请输入员工姓名" v-model="searchCriteria.salesEmployeeName" />
+      <el-input v-if="employee.position === '部长'" placeholder="请输入员工姓名" v-model="searchCriteria.repoEmployeeName" />
       <el-input placeholder="请输入订单号" v-model="searchCriteria.id"/>
       <el-input placeholder="请输入商品名称" v-model="searchCriteria.productName"/>
       <el-input placeholder="请输入交易公司" v-model="searchCriteria.companyName"/>
@@ -9,7 +9,7 @@
       <el-select placeholder="请选择订单状态" v-model="searchCriteria.status">
         <el-option label="待审批" value="审批"></el-option>
         <el-option label="被打回" value="打回"></el-option>
-        <el-option label="已完成" value="出库"></el-option>
+        <el-option label="运输中" value="运输"></el-option>
         <el-option label="已取消" value="取消"></el-option>
       </el-select>
       <div style="display: flex; align-items: center; justify-content: center;">
@@ -27,6 +27,7 @@
             style="margin: 0 10px;"
         />
       </div>
+      <el-switch v-model="searchCriteria.pending" active-text="隐藏已处理" active-value="notShow" inactive-text="显示已处理" inactive-value="show" />
       <div class="search-buttons">
         <el-button type="primary" round @click="search">查询</el-button>
         <el-button type="warning" round @click="reset">重置</el-button>
@@ -56,7 +57,7 @@
 
     <el-dialog v-model="dialogVisible" title="订单详情" class="custom-dialog" width="80%" height="90%">
       <el-card class="result-card">
-        <el-table :data="salesOrder.items" border class="custom-table">
+        <el-table :data="productOrder.items" border class="custom-table">
           <el-table-column label="订单信息" align="center">
             <template #default="{row}">
               <el-table :data="[row]" border>
@@ -90,31 +91,31 @@
           </el-table-column>
         </el-table>
 
-        <el-table :data="salesOrder.items" border class="custom-table">
-          <el-table-column label="产品信息" align="center">
-          <template #default="{row}">
-            <el-table :data="[row.product]" border>
-              <el-table-column label="产品ID">
-                <template #default="{row}">
-                  <span v-if="row.id !== '无'">{{ row.id }}</span><span v-else>无</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="产品名称">
-                <template #default="{row}">
-                  <span v-if="row.name !== '无'">{{ row.name }}</span><span v-else>无</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="产品价格">
-                <template #default="{row}">
-                  <span v-if="row.price !== '无'">{{ row.price }}</span><span v-else>无</span>
-                </template>
-              </el-table-column>
-            </el-table>
-          </template>
+        <el-table :data="productOrder.items" border class="custom-table">
+          <el-table-column label="商品信息" align="center">
+            <template #default="{row}">
+              <el-table :data="[row.product]" border>
+                <el-table-column label="商品ID">
+                  <template #default="{row}">
+                    <span v-if="row.id !== '无'">{{ row.id }}</span><span v-else>无</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="商品名称">
+                  <template #default="{row}">
+                    <span v-if="row.name !== '无'">{{ row.name }}</span><span v-else>无</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="商品价格">
+                  <template #default="{row}">
+                    <span v-if="row.price !== '无'">{{ row.price }}</span><span v-else>无</span>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </template>
           </el-table-column>
         </el-table>
 
-        <el-table :data="salesOrder.items" border class="custom-table">
+        <el-table :data="productOrder.items" border class="custom-table">
           <el-table-column label="公司信息" align="center">
             <template #default="{row}">
               <el-table :data="[row.company]" border>
@@ -133,7 +134,7 @@
           </el-table-column>
         </el-table>
 
-        <el-table :data="salesOrder.items" border class="custom-table">
+        <el-table :data="productOrder.items" border class="custom-table">
           <el-table-column label="销售部员信息" align="center">
             <template #default="{row}">
               <el-table :data="[row.salesEmployee]" border>
@@ -167,7 +168,7 @@
           </el-table-column>
         </el-table>
 
-        <el-table :data="salesOrder.items" border class="custom-table">
+        <el-table :data="productOrder.items" border class="custom-table">
           <el-table-column label="仓储部员信息" align="center">
             <template #default="{row}">
               <el-table :data="[row.repoEmployee]" border>
@@ -205,33 +206,41 @@
 
       <template #footer>
         <div class="footer-buttons">
-          <el-button v-if="employee.position === '部长' && salesOrder.items[0].status === '等待部长审批'"
+          <el-button v-if="productOrder.items[0].status === '等待仓储部审批'"
                      type="success"
-                     @click="checkOrder('等待仓储部审批')"
-                     class="decision-button">通过</el-button>
-          <el-button v-if="employee.position === '部长' && salesOrder.items[0].status === '等待部长审批'"
+                     @click="checkOrder('运输中')"
+                     class="decision-button">出库</el-button>
+          <el-button v-if="productOrder.items[0].status === '等待仓储部审批'"
+                     type="success"
+                     @click="checkOrder('等待生产部审批')"
+                     class="decision-button">通知生产</el-button>
+          <el-button v-if="productOrder.items[0].status === '等待仓储部审批'"
                      type="danger"
-                     @click="checkOrder('部长打回')"
+                     @click="checkOrder('仓储部打回')"
                      class="decision-button">打回</el-button>
 
-          <el-button v-if="employee.position === '部长' && salesOrder.items[0].status === '仓储部打回'"
+          <el-button v-if="productOrder.items[0].status === '等待仓储部验收'"
+                     type="success"
+                     @click="checkOrder('运输中')"
+                     class="decision-button">合格</el-button>
+          <el-button v-if="productOrder.items[0].status === '等待仓储部验收'"
                      type="danger"
-                     @click="checkOrder('等待仓储部审批')"
-                     class="decision-button">重新提交</el-button>
-          <el-button v-if="employee.position === '部长' && salesOrder.items[0].status === '仓储部打回'"
+                     @click="checkOrder('验收不合格')"
+                     class="decision-button">不合格</el-button>
+
+          <el-button v-if="productOrder.items[0].status === '生产部打回'"
+                     type="success"
+                     @click="checkOrder('等待生产部审批')"
+                     class="decision-button">再次提交</el-button>
+          <el-button v-if="productOrder.items[0].status === '生产部打回'"
                      type="danger"
-                     @click="checkOrder('部长打回')"
+                     @click="checkOrder('仓储部打回')"
                      class="decision-button">打回</el-button>
 
-          <el-button v-if="employee.position === '部员' && salesOrder.items[0].status === '部长打回'"
+          <el-button v-if="productOrder.items[0].status === '运输中'"
                      type="success"
-                     @click="checkOrder('等待部长审批')"
-                     class="decision-button">重新提交</el-button>
-
-          <el-button v-if="salesOrder.items[0].status === '已交货'"
-                     type="success"
-                     @click="checkOrder('已完成')"
-                     class="decision-button">完成订单</el-button>
+                     @click="checkOrder('已交货')"
+                     class="decision-button">完成运输</el-button>
         </div>
       </template>
     </el-dialog>
@@ -246,8 +255,8 @@ import axios from 'axios';
 // 初始化
 const columns = [
   { prop: 'id', label: '订单号', align: 'center' },
-  { prop: 'productName', label: '产品名称', align: 'center' },
-  { prop: 'quantity', label: '产品数量(吨)', align: 'center' },
+  { prop: 'productName', label: '商品名称', align: 'center' },
+  { prop: 'quantity', label: '商品数量(吨)', align: 'center' },
   { prop: 'companyName', label: '交易公司', align: 'center' },
   { prop: 'destination', label: '目的地', align: 'center' },
   { prop: 'date', label: '订单日期', align: 'center' },
@@ -255,7 +264,7 @@ const columns = [
   { prop: 'repoEmployeeName', label: '仓储部负责人', align: 'center' },
 ];
 const statusClass = (status) => {
-  if (/等待/.test(status) || /运输/.test(status) || /生产/.test(status)) {
+  if (/等待/.test(status) || /运输/.test(status)) {
     return 'status-pending';
   } else if (/打回/.test(status) || /不合格/.test(status)) {
     return 'status-rejected';
@@ -277,7 +286,8 @@ const searchCriteria = reactive({
   destination: '',
   startDate: '',
   endDate: '',
-  status: ''
+  status: '',
+  pending: 'show'
 });
 
 // 显示订单
@@ -286,9 +296,9 @@ const tableData = reactive({
 });
 const loadData = (page = 1) => {
   if (employee.position === '部员') {
-    searchCriteria.salesEmployeeId = employee.id;
+    searchCriteria.repoEmployeeId = employee.id;
   }
-  axios.post('/api/sales/searchOrder', searchCriteria)
+  axios.post('/api/repo/searchProductOrder', searchCriteria)
       .then(response => {
         const res = response.data;
         tableData.items = res.data.map(item => ({
@@ -315,17 +325,18 @@ const search = () => {
 };
 
 // 查看订单详情
-const salesOrder = reactive({
+const productOrder = reactive({
   items: []
 });
 const searchOrderDetail = (row) => {
   selectedId.value = row.id;
-  axios.post('/api/sales/searchOrderDetail', { id: selectedId.value })
+  axios.post('/api/repo/searchProductOrderDetail', { id: selectedId.value })
       .then(response => {
         console.log('Response received:', response.data);
         const res = response.data;
-        salesOrder.items = res.data.map(item => ({
+        productOrder.items = res.data.map(item => ({
           id: item.id,
+          productName: item.productName || '无',
           quantity: item.quantity || '无',
           applyDate: item.applyDate || '无',
           destination: item.destination || '无',
@@ -374,7 +385,7 @@ const dialogVisible = ref(false);
 const selectedId = ref(0);
 const searchContract = (row) => {
   selectedId.value = row.id;
-  axios.get('/api/sales/searchContract', { params: { id: selectedId.value } })
+  axios.get('/api/repo/searchContract', { params: { id: selectedId.value } })
       .then(response => {
         text.value = response.data.data;
         dialogVisible.value = true;
@@ -389,22 +400,23 @@ const searchContract = (row) => {
 const checkOrder = (status)=>{
   const requestData = {
     id: selectedId.value,
-    status: status
+    status: status,
+    repoEmployeeId: employee.id
   };
-  axios.post('/api/sales/checkOrder', requestData)
+  axios.post('/api/repo/checkProductOrder', requestData)
       .then(res=>{
         if(res.data.code==='200'){
-          ElMessage.success('操作成功');
+          ElMessage.success('通过成功');
           loadData();
         }else{
-          ElMessage.error('操作失败');
+          ElMessage.error('通过失败');
         }
       })
 }
 
 // 重置
 const reset = () => {
-  searchCriteria.salesEmployeeName = '';
+  searchCriteria.repoEmployeeName = '';
   searchCriteria.id = '';
   searchCriteria.productName = '';
   searchCriteria.companyName = '';
@@ -412,6 +424,7 @@ const reset = () => {
   searchCriteria.status = '';
   searchCriteria.startDate = '';
   searchCriteria.endDate = '';
+  searchCriteria.pending = 'show';
   loadData();
 };
 

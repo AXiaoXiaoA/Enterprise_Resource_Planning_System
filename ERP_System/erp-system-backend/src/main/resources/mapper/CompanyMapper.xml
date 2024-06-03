@@ -5,8 +5,8 @@
 <mapper namespace="com.changing.erpsystembackend.mapper.CompanyMapper">
     <!-- Insert -->
     <insert id="insertCompany" parameterType="com.changing.erpsystembackend.entity.Company">
-        INSERT INTO "Company" (ID, NAME, TEL)
-        VALUES (COMPANY_ID_SEQ.NEXTVAL, #{name}, #{tel})
+        INSERT INTO "Company" (NAME, TEL)
+        VALUES (#{name}, #{tel})
     </insert>
 
     <!-- Select -->

@@ -3,6 +3,41 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.changing.erpsystembackend.mapper.ProductMapper">
+    <!-- Insert -->
+    <insert id="insertProduct" parameterType="com.changing.erpsystembackend.entity.Product">
+        INSERT INTO "Product" (NAME, PRICE, INVENTORY)
+        VALUES (#{name}, #{price}, #{inventory})
+    </insert>
 
+    <!-- Update -->
+    <insert id="updateProduct" parameterType="com.changing.erpsystembackend.entity.Product">
+        UPDATE "Product"
+        SET INVENTORY = #{inventory}
+        WHERE ID = #{id}
+    </insert>
 
+    <!-- Select -->
+    <select id="findProductByName" parameterType="java.lang.String" resultType="com.changing.erpsystembackend.entity.Product">
+        SELECT *
+        FROM "Product"
+        WHERE NAME = #{name}
+    </select>
+
+    <select id="findProductIdByName" parameterType="java.lang.String" resultType="java.lang.Long">
+        SELECT ID
+        FROM "Product"
+        WHERE NAME = #{name}
+    </select>
+
+    <select id="findProduct" parameterType="com.changing.erpsystembackend.dto.repo.SearchProductRequestDTO" resultType="com.changing.erpsystembackend.entity.Product">
+        SELECT *
+        FROM "Product"
+        WHERE 1 = 1
+        <if test="id != null and id != '' ">
+            AND ID = #{id}
+        </if>
+        <if test="name != null and name != '' ">
+            AND NAME LIKE '%' || #{name} || '%'
+        </if>
+    </select>
 </mapper>

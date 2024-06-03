@@ -11,12 +11,15 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class SearchPurchasingOrderRequestDTO {
     private Long id;
-    private Long employeeId;
-    private String employeeName;
+    private Long purchasingEmployeeId;
+    private String purchasingEmployeeName;
+    private Long repoEmployeeId;
+    private String repoEmployeeName;
     private String materialName;
     private String companyName;
     private String departure;
     private String status;
     private LocalDate startDate;
     private LocalDate endDate;
+    private String pending;
 }

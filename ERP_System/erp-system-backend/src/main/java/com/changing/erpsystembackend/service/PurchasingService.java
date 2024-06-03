@@ -5,8 +5,10 @@ import com.changing.erpsystembackend.dto.purchasing.PurchasingOrderDetailRequest
 import com.changing.erpsystembackend.dto.purchasing.SearchPurchasingOrderRequestDTO;
 import com.changing.erpsystembackend.dto.purchasing.SubmitPurchasingOrderRequestDTO;
 import com.changing.erpsystembackend.entity.Company;
+import com.changing.erpsystembackend.entity.Material;
 import com.changing.erpsystembackend.entity.PurchasingOrder;
 import com.changing.erpsystembackend.mapper.CompanyMapper;
+import com.changing.erpsystembackend.mapper.MaterialMapper;
 import com.changing.erpsystembackend.mapper.PurchasingOrderMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,9 @@ public class PurchasingService {
     private PurchasingOrderMapper purchasingOrderMapper;
     @Autowired
     private CompanyMapper companyMapper;
+    @Autowired
+    private MaterialMapper materialMapper;
+
     // Home
 
     // OrderCheck
@@ -56,7 +61,15 @@ public class PurchasingService {
         purchasingOrder.setApplyDate(new java.sql.Date(System.currentTimeMillis()));
         purchasingOrder.setDeparture(submitPurchasingOrderRequest.getDeparture());
         purchasingOrder.setStatus(submitPurchasingOrderRequest.getStatus());
-        purchasingOrder.setMaterialName(submitPurchasingOrderRequest.getMaterialName());
+        Material material = materialMapper.findMaterialByName(submitPurchasingOrderRequest.getMaterialName());
+        if (material == null) {
+            material = new Material();
+            material.setName(submitPurchasingOrderRequest.getMaterialName());
+            material.setPrice(submitPurchasingOrderRequest.getPrice());
+            material.setInventory(0);
+            materialMapper.insertMaterial(material);
+        }
+        purchasingOrder.setMaterialId(materialMapper.findMaterialIdByName(submitPurchasingOrderRequest.getMaterialName()));
         purchasingOrder.setDescription(submitPurchasingOrderRequest.getDescription());
         purchasingOrderMapper.insertPurchasingOrder(purchasingOrder);
         System.out.println("1");

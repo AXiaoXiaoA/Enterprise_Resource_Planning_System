@@ -2,8 +2,8 @@ package com.changing.erpsystembackend.mapper;
 
 import com.changing.erpsystembackend.dto.purchasing.CheckPurchasingOrderRequestDTO;
 import com.changing.erpsystembackend.dto.purchasing.SearchPurchasingOrderRequestDTO;
+import com.changing.erpsystembackend.dto.repo.CheckMaterialOrderRequestDTO;
 import com.changing.erpsystembackend.entity.PurchasingOrder;
-import com.changing.erpsystembackend.entity.SalesOrder;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -16,6 +16,7 @@ public interface PurchasingOrderMapper {
 
     // update
     boolean checkPurchasingOrder(CheckPurchasingOrderRequestDTO checkPurchasingOrderRequest);
+    boolean checkMaterialOrder(CheckMaterialOrderRequestDTO checkMaterialOrderRequest);
 
     // select
     List<PurchasingOrder> findPurchasingOrder(SearchPurchasingOrderRequestDTO searchPurchasingOrderRequest);

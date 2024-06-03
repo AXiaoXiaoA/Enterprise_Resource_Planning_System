@@ -11,8 +11,8 @@
         <el-option label="采购部" value="purchasing"></el-option>
       </el-select>
       <el-select placeholder="请选择申请职务" v-model="searchCriteria.position">
-        <el-option label="总经理" value="manager"></el-option>
-        <el-option label="普通职员" value="worker"></el-option>
+        <el-option label="部长" value="部长"></el-option>
+        <el-option label="部员" value="部员"></el-option>
       </el-select>
       <div class="age-range-input">
         <el-input v-model="searchCriteria.ageStart" type="number" placeholder="年龄起" style="width: 120px;"/>

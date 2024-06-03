@@ -64,6 +64,42 @@ const router = createRouter({
         }
       ]
     },
+    //仓储部门界面
+    {
+      path: '/repo/homepage',
+      name: 'Repo_homepage',
+      component: () => import('../views/repo/Homepage.vue'),
+      redirect: '/repo/Home',
+      children:[
+        {
+          path:'/repo/Home',name:'repo_home',component:()=>import('@/views/repo/Home.vue'),
+        },
+        {
+          path:'/repo/MaterialOutbound',name:'repo_materialOutbound',component:()=>import('@/views/repo/MaterialOutbound.vue'),
+        },
+        {
+          path:'/repo/MaterialInbound',name:'repo_materialInbound',component:()=>import('@/views/repo/MaterialInbound.vue'),
+        },
+        {
+          path:'/repo/ProductOutbound',name:'repo_productOutbound',component:()=>import('@/views/repo/ProductOutbound.vue'),
+        },
+      ]
+    },
+    //生产部界面
+    {
+      path: '/production/Homepage',
+      name: 'production_homepage',
+      component: () => import('../views/production/Homepage.vue'),
+      redirect: '/production/Home',
+      children:[
+        {
+          path:'/production/Home',name:'production_home',component:()=>import('@/views/production/Home.vue'),
+        },
+        {
+          path:'/production/OrderCheck',name:'production_orderCheck',component:()=>import('@/views/production/OrderCheck.vue'),
+        }
+      ]
+    },
   ]
 })
 

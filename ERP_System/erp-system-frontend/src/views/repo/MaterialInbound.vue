@@ -1,15 +1,15 @@
 <template>
   <div class="container">
     <div class="search-box">
-      <el-input v-if="employee.position === '部长'" placeholder="请输入员工姓名" v-model="searchCriteria.salesEmployeeName" />
+      <el-input v-if="employee.position === '部长'" placeholder="请输入员工姓名" v-model="searchCriteria.repoEmployeeName" />
       <el-input placeholder="请输入订单号" v-model="searchCriteria.id"/>
-      <el-input placeholder="请输入商品名称" v-model="searchCriteria.productName"/>
+      <el-input placeholder="请输入商品名称" v-model="searchCriteria.materialName"/>
       <el-input placeholder="请输入交易公司" v-model="searchCriteria.companyName"/>
-      <el-input placeholder="请输入目的地" v-model="searchCriteria.destination"/>
+      <el-input placeholder="请输入出发地" v-model="searchCriteria.departure"/>
       <el-select placeholder="请选择订单状态" v-model="searchCriteria.status">
         <el-option label="待审批" value="审批"></el-option>
         <el-option label="被打回" value="打回"></el-option>
-        <el-option label="已完成" value="出库"></el-option>
+        <el-option label="已入库" value="入库"></el-option>
         <el-option label="已取消" value="取消"></el-option>
       </el-select>
       <div style="display: flex; align-items: center; justify-content: center;">
@@ -27,6 +27,7 @@
             style="margin: 0 10px;"
         />
       </div>
+      <el-switch v-model="searchCriteria.pending" active-text="隐藏已处理" active-value="notShow" inactive-text="显示已处理" inactive-value="show" />
       <div class="search-buttons">
         <el-button type="primary" round @click="search">查询</el-button>
         <el-button type="warning" round @click="reset">重置</el-button>
@@ -56,7 +57,7 @@
 
     <el-dialog v-model="dialogVisible" title="订单详情" class="custom-dialog" width="80%" height="90%">
       <el-card class="result-card">
-        <el-table :data="salesOrder.items" border class="custom-table">
+        <el-table :data="materialOrder.items" border class="custom-table">
           <el-table-column label="订单信息" align="center">
             <template #default="{row}">
               <el-table :data="[row]" border>
@@ -65,7 +66,7 @@
                     {{ row.id }}
                   </template>
                 </el-table-column>
-                <el-table-column label="数量">
+                <el-table-column label="原料数量">
                   <template #default="{row}">
                     <span v-if="row.quantity !== '无'">{{ row.quantity }}</span><span v-else>无</span>
                   </template>
@@ -75,9 +76,9 @@
                     <span v-if="row.applyDate !== '无'">{{ row.applyDate }}</span><span v-else>无</span>
                   </template>
                 </el-table-column>
-                <el-table-column label="目的地">
+                <el-table-column label="出发地">
                   <template #default="{row}">
-                    <span v-if="row.destination !== '无'">{{ row.destination }}</span><span v-else>无</span>
+                    <span v-if="row.departure !== '无'">{{ row.departure }}</span><span v-else>无</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="订单状态">
@@ -90,31 +91,31 @@
           </el-table-column>
         </el-table>
 
-        <el-table :data="salesOrder.items" border class="custom-table">
-          <el-table-column label="产品信息" align="center">
-          <template #default="{row}">
-            <el-table :data="[row.product]" border>
-              <el-table-column label="产品ID">
-                <template #default="{row}">
-                  <span v-if="row.id !== '无'">{{ row.id }}</span><span v-else>无</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="产品名称">
-                <template #default="{row}">
-                  <span v-if="row.name !== '无'">{{ row.name }}</span><span v-else>无</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="产品价格">
-                <template #default="{row}">
-                  <span v-if="row.price !== '无'">{{ row.price }}</span><span v-else>无</span>
-                </template>
-              </el-table-column>
-            </el-table>
-          </template>
+        <el-table :data="materialOrder.items" border class="custom-table">
+          <el-table-column label="原料信息" align="center">
+            <template #default="{row}">
+              <el-table :data="[row.material]" border>
+                <el-table-column label="原料ID">
+                  <template #default="{row}">
+                    <span v-if="row.id !== '无'">{{ row.id }}</span><span v-else>无</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="原料名称">
+                  <template #default="{row}">
+                    <span v-if="row.name !== '无'">{{ row.name }}</span><span v-else>无</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="原料价格">
+                  <template #default="{row}">
+                    <span v-if="row.price !== '无'">{{ row.price }}</span><span v-else>无</span>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </template>
           </el-table-column>
         </el-table>
 
-        <el-table :data="salesOrder.items" border class="custom-table">
+        <el-table :data="materialOrder.items" border class="custom-table">
           <el-table-column label="公司信息" align="center">
             <template #default="{row}">
               <el-table :data="[row.company]" border>
@@ -133,31 +134,31 @@
           </el-table-column>
         </el-table>
 
-        <el-table :data="salesOrder.items" border class="custom-table">
-          <el-table-column label="销售部员信息" align="center">
+        <el-table :data="materialOrder.items" border class="custom-table">
+          <el-table-column label="采购部员信息" align="center">
             <template #default="{row}">
-              <el-table :data="[row.salesEmployee]" border>
-                <el-table-column label="销售部员工号">
+              <el-table :data="[row.purchasingEmployee]" border>
+                <el-table-column label="采购部员工号">
                   <template #default="{row}">
                     <span v-if="row.id !== '无'">{{ row.id }}</span><span v-else>无</span>
                   </template>
                 </el-table-column>
-                <el-table-column label="销售部员姓名">
+                <el-table-column label="采购部员姓名">
                   <template #default="{row}">
                     <span v-if="row.person.name !== '无'">{{ row.person.name }}</span><span v-else>无</span>
                   </template>
                 </el-table-column>
-                <el-table-column label="销售部员职位">
+                <el-table-column label="采购部员职位">
                   <template #default="{row}">
                     <span v-if="row.position !== '无'">{{ row.position }}</span><span v-else>无</span>
                   </template>
                 </el-table-column>
-                <el-table-column label="销售部员邮箱">
+                <el-table-column label="采购部员邮箱">
                   <template #default="{row}">
                     <span v-if="row.person.email !== '无'">{{ row.person.email }}</span><span v-else>无</span>
                   </template>
                 </el-table-column>
-                <el-table-column label="销售部员电话">
+                <el-table-column label="采购部员电话">
                   <template #default="{row}">
                     <span v-if="row.person.tel !== '无'">{{ row.person.tel }}</span><span v-else>无</span>
                   </template>
@@ -167,7 +168,7 @@
           </el-table-column>
         </el-table>
 
-        <el-table :data="salesOrder.items" border class="custom-table">
+        <el-table :data="materialOrder.items" border class="custom-table">
           <el-table-column label="仓储部员信息" align="center">
             <template #default="{row}">
               <el-table :data="[row.repoEmployee]" border>
@@ -205,33 +206,23 @@
 
       <template #footer>
         <div class="footer-buttons">
-          <el-button v-if="employee.position === '部长' && salesOrder.items[0].status === '等待部长审批'"
+          <el-button v-if="materialOrder.items[0].status === '等待仓储部审批'"
                      type="success"
-                     @click="checkOrder('等待仓储部审批')"
+                     @click="checkOrder('等待仓储部验收')"
                      class="decision-button">通过</el-button>
-          <el-button v-if="employee.position === '部长' && salesOrder.items[0].status === '等待部长审批'"
+          <el-button v-if="materialOrder.items[0].status === '等待仓储部审批'"
                      type="danger"
-                     @click="checkOrder('部长打回')"
+                     @click="checkOrder('仓储部打回')"
                      class="decision-button">打回</el-button>
 
-          <el-button v-if="employee.position === '部长' && salesOrder.items[0].status === '仓储部打回'"
-                     type="danger"
-                     @click="checkOrder('等待仓储部审批')"
-                     class="decision-button">重新提交</el-button>
-          <el-button v-if="employee.position === '部长' && salesOrder.items[0].status === '仓储部打回'"
-                     type="danger"
-                     @click="checkOrder('部长打回')"
-                     class="decision-button">打回</el-button>
-
-          <el-button v-if="employee.position === '部员' && salesOrder.items[0].status === '部长打回'"
+          <el-button v-if="materialOrder.items[0].status === '等待仓储部验收'"
                      type="success"
-                     @click="checkOrder('等待部长审批')"
-                     class="decision-button">重新提交</el-button>
-
-          <el-button v-if="salesOrder.items[0].status === '已交货'"
-                     type="success"
-                     @click="checkOrder('已完成')"
-                     class="decision-button">完成订单</el-button>
+                     @click="checkOrder('已入库')"
+                     class="decision-button">合格</el-button>
+          <el-button v-if="materialOrder.items[0].status === '等待仓储部验收'"
+                     type="danger"
+                     @click="checkOrder('验收不合格')"
+                     class="decision-button">不合格</el-button>
         </div>
       </template>
     </el-dialog>
@@ -246,20 +237,20 @@ import axios from 'axios';
 // 初始化
 const columns = [
   { prop: 'id', label: '订单号', align: 'center' },
-  { prop: 'productName', label: '产品名称', align: 'center' },
-  { prop: 'quantity', label: '产品数量(吨)', align: 'center' },
+  { prop: 'materialName', label: '原料名称', align: 'center' },
+  { prop: 'quantity', label: '原料数量(吨)', align: 'center' },
   { prop: 'companyName', label: '交易公司', align: 'center' },
-  { prop: 'destination', label: '目的地', align: 'center' },
+  { prop: 'departure', label: '出发地', align: 'center' },
   { prop: 'date', label: '订单日期', align: 'center' },
-  { prop: 'salesEmployeeName', label: '销售部负责人', align: 'center' },
+  { prop: 'purchasingEmployeeName', label: '采购部负责人', align: 'center' },
   { prop: 'repoEmployeeName', label: '仓储部负责人', align: 'center' },
 ];
 const statusClass = (status) => {
-  if (/等待/.test(status) || /运输/.test(status) || /生产/.test(status)) {
+  if (/等待/.test(status)) {
     return 'status-pending';
   } else if (/打回/.test(status) || /不合格/.test(status)) {
     return 'status-rejected';
-  } else if (/完成/.test(status) || /交货/.test(status)) {
+  } else if (/完成/.test(status) || /入库/.test(status)) {
     return 'status-completed';
   } else if (/取消/.test(status)) {
     return 'status-canceled';
@@ -268,16 +259,17 @@ const statusClass = (status) => {
 const employee = JSON.parse(localStorage.getItem('user') || '{}');
 const searchCriteria = reactive({
   id: '',
-  salesEmployeeId: '',
-  salesEmployeeName: '',
+  purchasingEmployeeId: '',
+  purchasingEmployeeName: '',
   repoEmployeeId: '',
   repoEmployeeName: '',
-  productName: '',
+  materialName: '',
   companyName: '',
-  destination: '',
+  departure: '',
   startDate: '',
   endDate: '',
-  status: ''
+  status: '',
+  pending: 'show'
 });
 
 // 显示订单
@@ -286,20 +278,20 @@ const tableData = reactive({
 });
 const loadData = (page = 1) => {
   if (employee.position === '部员') {
-    searchCriteria.salesEmployeeId = employee.id;
+    searchCriteria.repoEmployeeId = employee.id;
   }
-  axios.post('/api/sales/searchOrder', searchCriteria)
+  axios.post('/api/repo/searchMaterialOrder', searchCriteria)
       .then(response => {
         const res = response.data;
         tableData.items = res.data.map(item => ({
           id: item.id,
-          productName: item.product.name,
+          materialName: item.material.name,
           quantity: item.quantity,
           companyName: item.company.name,
-          destination: item.destination,
+          departure: item.departure,
           date: item.applyDate,
           status: item.status,
-          salesEmployeeName: item.salesEmployee.person.name,
+          purchasingEmployeeName: item.purchasingEmployee.person.name,
           repoEmployeeName: item.repoEmployee ? item.repoEmployee.person.name : '暂无'
         }));
       })
@@ -315,38 +307,39 @@ const search = () => {
 };
 
 // 查看订单详情
-const salesOrder = reactive({
+const materialOrder = reactive({
   items: []
 });
 const searchOrderDetail = (row) => {
   selectedId.value = row.id;
-  axios.post('/api/sales/searchOrderDetail', { id: selectedId.value })
+  axios.post('/api/repo/searchMaterialOrderDetail', { id: selectedId.value })
       .then(response => {
         console.log('Response received:', response.data);
         const res = response.data;
-        salesOrder.items = res.data.map(item => ({
+        materialOrder.items = res.data.map(item => ({
           id: item.id,
+          materialName: item.material.name || '无',
           quantity: item.quantity || '无',
           applyDate: item.applyDate || '无',
-          destination: item.destination || '无',
+          departure: item.departure || '无',
           status: item.status || '无',
-          product: {
-            id: item.product ? item.product.id : '无',
-            name: item.product ? item.product.name : '无',
-            price: item.product ? item.product.price : '无'
+          material: {
+            id: item.material ? item.material.id : '无',
+            name: item.material ? item.material.name : '无',
+            price: item.material ? item.material.price : '无'
           },
           company: {
             id: item.company ? item.company.id : '无',
             name: item.company ? item.company.name : '无',
             tel: item.company ? item.company.tel : '无'
           },
-          salesEmployee: {
-            id: item.salesEmployee ? item.salesEmployee.id : '无',
-            position: item.salesEmployee.position ? item.salesEmployee.position : '无',
+          purchasingEmployee: {
+            id: item.purchasingEmployee ? item.purchasingEmployee.id : '无',
+            position: item.purchasingEmployee.position ? item.purchasingEmployee.position : '无',
             person: {
-              name: item.salesEmployee && item.salesEmployee.person ? item.salesEmployee.person.name : '无',
-              email: item.salesEmployee && item.salesEmployee.person ? item.salesEmployee.person.email : '无',
-              tel: item.salesEmployee && item.salesEmployee.person ? item.salesEmployee.person.tel : '无'
+              name: item.purchasingEmployee && item.purchasingEmployee.person ? item.purchasingEmployee.person.name : '无',
+              email: item.purchasingEmployee && item.purchasingEmployee.person ? item.purchasingEmployee.person.email : '无',
+              tel: item.purchasingEmployee && item.purchasingEmployee.person ? item.purchasingEmployee.person.tel : '无'
             },
           },
           repoEmployee: item.repoEmployee ? {
@@ -374,7 +367,7 @@ const dialogVisible = ref(false);
 const selectedId = ref(0);
 const searchContract = (row) => {
   selectedId.value = row.id;
-  axios.get('/api/sales/searchContract', { params: { id: selectedId.value } })
+  axios.get('/api/repo/searchContract', { params: { id: selectedId.value } })
       .then(response => {
         text.value = response.data.data;
         dialogVisible.value = true;
@@ -384,34 +377,36 @@ const searchContract = (row) => {
         console.error('Error fetching resume:', error);
       });
 };
-
+``
 // 审核申请
 const checkOrder = (status)=>{
   const requestData = {
     id: selectedId.value,
-    status: status
+    status: status,
+    repoEmployeeId: employee.id
   };
-  axios.post('/api/sales/checkOrder', requestData)
+  axios.post('/api/repo/checkPurchasingOrder', requestData)
       .then(res=>{
         if(res.data.code==='200'){
-          ElMessage.success('操作成功');
+          ElMessage.success('入库成功');
           loadData();
         }else{
-          ElMessage.error('操作失败');
+          ElMessage.error('入库失败');
         }
       })
 }
 
 // 重置
 const reset = () => {
-  searchCriteria.salesEmployeeName = '';
+  searchCriteria.repoEmployeeName = '';
   searchCriteria.id = '';
-  searchCriteria.productName = '';
+  searchCriteria.materialName = '';
   searchCriteria.companyName = '';
-  searchCriteria.destination = '';
+  searchCriteria.departure = '';
   searchCriteria.status = '';
   searchCriteria.startDate = '';
   searchCriteria.endDate = '';
+  searchCriteria.pending = 'show';
   loadData();
 };
 

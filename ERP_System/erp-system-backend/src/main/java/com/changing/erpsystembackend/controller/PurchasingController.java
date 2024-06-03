@@ -13,52 +13,32 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/purchasing")
 public class PurchasingController {
 	@Autowired
-	PurchasingService purchasingService;
+	private PurchasingService purchasingService;
 
 	// Home
 
 
 	// OrderCheck
-	@PostMapping("/searchPurchasingOrder")
-	public Result searchPurchasingOrder(@RequestBody SearchPurchasingOrderRequestDTO searchPurchasingOrderRequest) {
+	@PostMapping("/searchOrder")
+	public Result searchOrder(@RequestBody SearchPurchasingOrderRequestDTO searchPurchasingOrderRequest) {
 		return Result.success(purchasingService.searchPurchasingOrder(searchPurchasingOrderRequest));
 	}
-	@PostMapping("/searchPurchasingOrderDetail")
-	public Result searchPurchasingOrderDetail(@RequestBody PurchasingOrderDetailRequestDTO purchasingOrderDetailRequest) {
+	@PostMapping("/searchOrderDetail")
+	public Result searchOrderDetail(@RequestBody PurchasingOrderDetailRequestDTO purchasingOrderDetailRequest) {
 		return Result.success(purchasingService.searchPurchasingOrderDetail(purchasingOrderDetailRequest));
 	}
 	@GetMapping("/searchContract")
 	public Result searchContract(@RequestParam("id") int id) {
 		return Result.success(purchasingService.searchContract(id));
 	}
-	@PostMapping("/acceptPurchasingOrder")
-	public Result acceptPurchasingOrder(@RequestBody CheckPurchasingOrderRequestDTO checkPurchasingOrderRequest){
-		if(purchasingService.checkPurchasingOrder(checkPurchasingOrderRequest)){
-			return Result.success("通过成功");
-		}else{
-			return Result.error("通过失败");
-		}
-	}
-	@PostMapping("/rejectPurchasingOrder")
-	public Result rejectPurchasingOrder(@RequestBody CheckPurchasingOrderRequestDTO checkPurchasingOrderRequest){
-		if(purchasingService.checkPurchasingOrder(checkPurchasingOrderRequest)){
-			return Result.success("打回成功");
-		}else{
-			return Result.error("打回失败");
-		}
-	}
-	@PostMapping("/submitPurchasingOrderAgain")
-	public Result submitPurchasingOrderAgain(@RequestBody CheckPurchasingOrderRequestDTO checkPurchasingOrderRequest){
-		if(purchasingService.checkPurchasingOrder(checkPurchasingOrderRequest)){
-			return Result.success("提交成功");
-		}else{
-			return Result.error("提交失败");
-		}
+	@PostMapping("/checkOrder")
+	public Result checkOrder(@RequestBody CheckPurchasingOrderRequestDTO checkPurchasingOrderRequest){
+		return Result.success(purchasingService.checkPurchasingOrder(checkPurchasingOrderRequest));
 	}
 
 	// OrderSubmit
 	@PostMapping("/submitOrder")
-	public Result submitPurchasingOrder(@RequestBody SubmitPurchasingOrderRequestDTO submitPurchasingOrderRequest) {
+	public Result submitOrder(@RequestBody SubmitPurchasingOrderRequestDTO submitPurchasingOrderRequest) {
 		try {
 			if (purchasingService.submitPurchasingOrder(submitPurchasingOrderRequest)) {
 				return Result.success("订单提交成功");

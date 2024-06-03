@@ -1,5 +1,6 @@
 package com.changing.erpsystembackend.mapper;
 
+import com.changing.erpsystembackend.dto.repo.CheckProductOrderRequestDTO;
 import com.changing.erpsystembackend.dto.sales.CheckSalesOrderRequestDTO;
 import com.changing.erpsystembackend.dto.sales.SearchSalesOrderRequestDTO;
 import com.changing.erpsystembackend.entity.SalesOrder;
@@ -16,6 +17,7 @@ public interface SalesOrderMapper {
 
     // update
     boolean checkSalesOrder(CheckSalesOrderRequestDTO checkSalesOrderRequest);
+    boolean checkProductOrder(CheckProductOrderRequestDTO checkProductOrderRequest);
 
     // select
     List<SalesOrder> findSalesOrder(SearchSalesOrderRequestDTO searchSalesOrderRequest);

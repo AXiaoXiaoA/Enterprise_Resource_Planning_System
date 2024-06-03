@@ -13,7 +13,7 @@ import java.util.Map;
 @RequestMapping("/personnel")
 public class PersonnelController {
 	@Resource
-	PersonnelService personnelService;
+	private PersonnelService personnelService;
 
 	// Home
 	@GetMapping("/employeeDistribution")

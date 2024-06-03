@@ -5,8 +5,10 @@ import com.changing.erpsystembackend.dto.sales.SalesOrderDetailRequestDTO;
 import com.changing.erpsystembackend.dto.sales.SubmitSalesOrderRequestDTO;
 import com.changing.erpsystembackend.dto.sales.SearchSalesOrderRequestDTO;
 import com.changing.erpsystembackend.entity.Company;
+import com.changing.erpsystembackend.entity.Product;
 import com.changing.erpsystembackend.entity.SalesOrder;
 import com.changing.erpsystembackend.mapper.CompanyMapper;
+import com.changing.erpsystembackend.mapper.ProductMapper;
 import com.changing.erpsystembackend.mapper.SalesOrderMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +22,8 @@ public class SalesService {
     private SalesOrderMapper salesOrderMapper;
     @Autowired
     private CompanyMapper companyMapper;
+    @Autowired
+    private ProductMapper productMapper;
     // Home
 
     // OrderCheck
@@ -56,7 +60,15 @@ public class SalesService {
         salesOrder.setApplyDate(new java.sql.Date(System.currentTimeMillis()));
         salesOrder.setDestination(submitSalesOrderRequest.getDestination());
         salesOrder.setStatus(submitSalesOrderRequest.getStatus());
-        salesOrder.setProductName(submitSalesOrderRequest.getProductName());
+        Product product = productMapper.findProductByName(submitSalesOrderRequest.getProductName());
+        if (product == null) {
+            product = new Product();
+            product.setName(submitSalesOrderRequest.getProductName());
+            product.setPrice(submitSalesOrderRequest.getPrice());
+            product.setInventory(0);
+            productMapper.insertProduct(product);
+        }
+        salesOrder.setProductId(productMapper.findProductIdByName(submitSalesOrderRequest.getProductName()));
         salesOrder.setDescription(submitSalesOrderRequest.getDescription());
         salesOrderMapper.insertSalesOrder(salesOrder);
         return true;

@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="search-box">
-      <el-input v-if="employee.position === '部长'" placeholder="请输入员工姓名" v-model="searchCriteria.employeeName" />
+      <el-input v-if="employee.position === '部长'" placeholder="请输入员工姓名" v-model="searchCriteria.purchasingEmployeeName" />
       <el-input placeholder="请输入订单号" v-model="searchCriteria.id"/>
       <el-input placeholder="请输入商品名称" v-model="searchCriteria.materialName"/>
       <el-input placeholder="请输入交易公司" v-model="searchCriteria.companyName"/>
@@ -9,7 +9,7 @@
       <el-select placeholder="请选择订单状态" v-model="searchCriteria.status">
         <el-option label="待审批" value="审批"></el-option>
         <el-option label="被打回" value="打回"></el-option>
-        <el-option label="已完成" value="完成"></el-option>
+        <el-option label="已入库" value="入库"></el-option>
         <el-option label="已取消" value="取消"></el-option>
       </el-select>
       <div style="display: flex; align-items: center; justify-content: center;">
@@ -65,12 +65,7 @@
                     {{ row.id }}
                   </template>
                 </el-table-column>
-                <el-table-column label="商品名称">
-                  <template #default="{row}">
-                    <span v-if="row.materialName !== '无'">{{ row.materialName }}</span><span v-else>无</span>
-                  </template>
-                </el-table-column>
-                <el-table-column label="数量">
+                <el-table-column label="原料数量">
                   <template #default="{row}">
                     <span v-if="row.quantity !== '无'">{{ row.quantity }}</span><span v-else>无</span>
                   </template>
@@ -82,7 +77,7 @@
                 </el-table-column>
                 <el-table-column label="出发地">
                   <template #default="{row}">
-                    <span v-if="row.destination !== '无'">{{ row.destination }}</span><span v-else>无</span>
+                    <span v-if="row.departure !== '无'">{{ row.departure }}</span><span v-else>无</span>
                   </template>
                 </el-table-column>
                 <el-table-column label="订单状态">
@@ -96,20 +91,20 @@
         </el-table>
 
         <el-table :data="purchasingOrder.items" border class="custom-table">
-          <el-table-column label="商品信息" align="center">
+          <el-table-column label="原料信息" align="center">
           <template #default="{row}">
             <el-table :data="[row.material]" border>
-              <el-table-column label="商品ID">
+              <el-table-column label="原料ID">
                 <template #default="{row}">
                   <span v-if="row.id !== '无'">{{ row.id }}</span><span v-else>无</span>
                 </template>
               </el-table-column>
-              <el-table-column label="商品名称">
+              <el-table-column label="原料名称">
                 <template #default="{row}">
                   <span v-if="row.name !== '无'">{{ row.name }}</span><span v-else>无</span>
                 </template>
               </el-table-column>
-              <el-table-column label="商品价格">
+              <el-table-column label="原料价格">
                 <template #default="{row}">
                   <span v-if="row.price !== '无'">{{ row.price }}</span><span v-else>无</span>
                 </template>
@@ -210,9 +205,37 @@
 
       <template #footer>
         <div class="footer-buttons">
-          <el-button v-if="employee.position === '部长' && purchasingOrder.items[0].status === '等待部长审批'" type="success" @click="acceptOrder" class="decision-button">通过</el-button>
-          <el-button v-if="employee.position === '部长' && purchasingOrder.items[0].status === '等待部长审批'" type="danger" @click="rejectOrder" class="decision-button">打回</el-button>
-          <el-button v-if="employee.position === '部员' && purchasingOrder.items[0].status === '部长打回'" type="success" @click="submitOrderAgain" class="decision-button">再次提交</el-button>
+          <el-button v-if="employee.position === '部长' && purchasingOrder.items[0].status === '等待部长审批'"
+                     type="success"
+                     @click="checkOrder('等待仓储部审批')"
+                     class="decision-button">通过</el-button>
+          <el-button v-if="employee.position === '部长' && purchasingOrder.items[0].status === '等待部长审批'"
+                     type="danger"
+                     @click="checkOrder('部长打回')"
+                     class="decision-button">打回</el-button>
+
+          <el-button v-if="employee.position === '部长' && purchasingOrder.items[0].status === '仓储部打回'"
+                     type="danger"
+                     @click="checkOrder('等待仓储部审批')"
+                     class="decision-button">重新提交</el-button>
+          <el-button v-if="employee.position === '部长' && purchasingOrder.items[0].status === '仓储部打回'"
+                     type="danger"
+                     @click="checkOrder('部长打回')"
+                     class="decision-button">打回</el-button>
+
+          <el-button v-if="employee.position === '部员' && salesOrder.items[0].status === '部长打回'"
+                     type="success"
+                     @click="checkOrder('等待部长审批')"
+                     class="decision-button">重新提交</el-button>
+
+          <el-button v-if="purchasingOrder.items[0].status === '已入库'"
+                     type="success"
+                     @click="checkOrder('已完成')"
+                     class="decision-button">完成订单</el-button>
+          <el-button v-if="purchasingOrder.items[0].status === '验收不合格'"
+                     type="success"
+                     @click="checkOrder('等待仓储部验收')"
+                     class="decision-button">联系买方</el-button>
         </div>
       </template>
     </el-dialog>
@@ -233,13 +256,14 @@ const columns = [
   { prop: 'departure', label: '出发地', align: 'center' },
   { prop: 'date', label: '订单日期', align: 'center' },
   { prop: 'purchasingEmployeeName', label: '采购部负责人', align: 'center' },
+  { prop: 'repoEmployeeName', label: '仓储部负责人', align: 'center' },
 ];
 const statusClass = (status) => {
-  if (/审批/.test(status) || /出库/.test(status)) {
+  if (/等待/.test(status)) {
     return 'status-pending';
-  } else if (/打回/.test(status)) {
+  } else if (/打回/.test(status) || /不合格/.test(status)) {
     return 'status-rejected';
-  } else if (/完成/.test(status)) {
+  } else if (/完成/.test(status) || /入库/.test(status)) {
     return 'status-completed';
   } else if (/取消/.test(status)) {
     return 'status-canceled';
@@ -248,8 +272,10 @@ const statusClass = (status) => {
 const employee = JSON.parse(localStorage.getItem('user') || '{}');
 const searchCriteria = reactive({
   id: '',
-  employeeId: '',
-  employeeName: '',
+  purchasingEmployeeId: '',
+  purchasingEmployeeName: '',
+  repoEmployeeId: '',
+  repoEmployeeName: '',
   materialName: '',
   companyName: '',
   departure: '',
@@ -264,14 +290,14 @@ const tableData = reactive({
 });
 const loadData = (page = 1) => {
   if (employee.position === '部员') {
-    searchCriteria.employeeId = employee.id;
+    searchCriteria.purchasingEmployeeId = employee.id;
   }
-  axios.post('/api/purchasing/searchPurchasingOrder', searchCriteria)
+  axios.post('/api/purchasing/searchOrder', searchCriteria)
       .then(response => {
         const res = response.data;
         tableData.items = res.data.map(item => ({
           id: item.id,
-          materialName: item.materialName,
+          materialName: item.material.name,
           quantity: item.quantity,
           companyName: item.company.name,
           departure: item.departure,
@@ -298,7 +324,7 @@ const purchasingOrder = reactive({
 });
 const searchOrderDetail = (row) => {
   selectedId.value = row.id;
-  axios.post('/api/purchasing/searchPurchasingOrderDetail', { id: selectedId.value })
+  axios.post('/api/purchasing/searchOrderDetail', { id: selectedId.value })
       .then(response => {
         console.log('Response received:', response.data);
         const res = response.data;
@@ -321,18 +347,18 @@ const searchOrderDetail = (row) => {
           },
           purchasingEmployee: {
             id: item.purchasingEmployee ? item.purchasingEmployee.id : '无',
+            position: item.purchasingEmployee.position ? item.purchasingEmployee.position : '无',
             person: {
               name: item.purchasingEmployee && item.purchasingEmployee.person ? item.purchasingEmployee.person.name : '无',
-              position: item.purchasingEmployee.position ? item.purchasingEmployee.position : '无',
               email: item.purchasingEmployee && item.purchasingEmployee.person ? item.purchasingEmployee.person.email : '无',
               tel: item.purchasingEmployee && item.purchasingEmployee.person ? item.purchasingEmployee.person.tel : '无'
             },
           },
           repoEmployee: item.repoEmployee ? {
             id: item.repoEmployee.id ? item.repoEmployee.id : '无',
+            position: item.repoEmployee.position ? item.repoEmployee.position : '无',
             person: {
               name: item.repoEmployee && item.repoEmployee.person ? item.repoEmployee.person.name : '无',
-              position: item.repoEmployee.position ? item.repoEmployee.position : '无',
               email: item.repoEmployee && item.repoEmployee.person ? item.repoEmployee.person.email : '无',
               tel: item.repoEmployee && item.repoEmployee.person ? item.repoEmployee.person.tel : '无'
             },
@@ -365,12 +391,12 @@ const searchContract = (row) => {
 };
 
 // 审核申请
-const acceptOrder = ()=>{
+const checkOrder = (status)=>{
   const requestData = {
     id: selectedId.value,
-    status: '等待仓储部审批'
+    status: status
   };
-  axios.post('/api/purchasing/acceptPurchasingOrder', requestData)
+  axios.post('/api/purchasing/checkOrder', requestData)
       .then(res=>{
         if(res.data.code==='200'){
           ElMessage.success('通过成功');
@@ -380,39 +406,10 @@ const acceptOrder = ()=>{
         }
       })
 }
-const rejectOrder = ()=>{
-  const requestData = {
-    id: selectedId.value,
-    status: '部长打回'
-  };
-  axios.post('/api/purchasing/rejectPurchasingOrder', requestData)
-      .then(res=>{
-        if(res.data.code==='200'){
-          ElMessage.success('打回成功');
-          loadData();
-        }else{
-          ElMessage.error('打回失败');
-        }
-      })
-}
-const submitOrderAgain = ()=>{
-  const requestData = {
-    id: selectedId.value,
-    status: '等待部长审批'
-  };
-  axios.post('/api/purchasing/submitPurchasingOrderAgain', requestData)
-      .then(res=>{
-        if(res.data.code==='200'){
-          ElMessage.success('提交成功');
-          loadData();
-        }else{
-          ElMessage.error('提交失败');
-        }
-      })
-}
+
 // 重置
 const reset = () => {
-  searchCriteria.employeeName = '';
+  searchCriteria.purchasingEmployeeName = '';
   searchCriteria.id = '';
   searchCriteria.materialName = '';
   searchCriteria.companyName = '';

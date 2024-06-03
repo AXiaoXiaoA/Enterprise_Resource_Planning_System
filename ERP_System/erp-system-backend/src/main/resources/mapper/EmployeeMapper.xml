@@ -5,8 +5,8 @@
 <mapper namespace="com.changing.erpsystembackend.mapper.EmployeeMapper">
     <!-- Insert -->
     <insert id="insertEmployee" parameterType="com.changing.erpsystembackend.entity.Employee">
-        INSERT INTO "Employee" (ID, PERSON_ID, DEPARTMENT, POSITION, START_DATE, STATUS, RESUME)
-        VALUES (EMPLOYEE_ID_SEQ.NEXTVAL, #{personId}, #{department}, #{position}, #{startDate}, #{status}, #{resume,jdbcType=CLOB})
+        INSERT INTO "Employee" (PERSON_ID, DEPARTMENT, POSITION, START_DATE, STATUS, RESUME)
+        VALUES (#{personId}, #{department}, #{position}, #{startDate}, #{status}, #{resume,jdbcType=CLOB})
     </insert>
 
     <!-- Update -->

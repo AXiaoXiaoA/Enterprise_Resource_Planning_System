@@ -3,6 +3,47 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.changing.erpsystembackend.mapper.MaterialMapper">
+    <!-- Insert -->
+    <insert id="insertMaterial" parameterType="com.changing.erpsystembackend.entity.Material">
+        INSERT INTO "Material" (NAME, PRICE, INVENTORY)
+        VALUES (#{name}, #{price}, #{inventory})
+    </insert>
 
+    <!-- Update -->
+    <insert id="updateMaterial" parameterType="com.changing.erpsystembackend.entity.Material">
+        UPDATE "Material"
+        SET INVENTORY = #{inventory}
+        WHERE ID = #{id}
+    </insert>
 
+    <!-- Select -->
+    <select id="findMaterialByName" parameterType="java.lang.String" resultType="com.changing.erpsystembackend.entity.Material">
+        SELECT *
+        FROM "Material"
+        WHERE NAME = #{name}
+    </select>
+
+    <select id="findMaterialById" parameterType="java.lang.Long" resultType="com.changing.erpsystembackend.entity.Material">
+        SELECT *
+        FROM "Material"
+        WHERE ID = #{id}
+    </select>
+
+    <select id="findMaterialIdByName" parameterType="java.lang.String" resultType="java.lang.Long">
+        SELECT ID
+        FROM "Material"
+        WHERE NAME = #{name}
+    </select>
+
+    <select id="findMaterial" parameterType="com.changing.erpsystembackend.dto.repo.SearchMaterialRequestDTO" resultType="com.changing.erpsystembackend.entity.Material">
+        SELECT *
+        FROM "Material"
+        WHERE 1 = 1
+        <if test="id != null and id != '' ">
+            AND ID = #{id}
+        </if>
+        <if test="name != null and name != '' ">
+            AND NAME LIKE '%' || #{name} || '%'
+        </if>
+    </select>
 </mapper>

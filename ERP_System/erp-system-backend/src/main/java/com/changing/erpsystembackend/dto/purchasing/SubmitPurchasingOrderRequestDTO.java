@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class SubmitPurchasingOrderRequestDTO {
     private Long purchasingEmployeeId;
     private String materialName;
+    private Double price;
     private int quantity;
     private String companyName;
     private Long companyTel;

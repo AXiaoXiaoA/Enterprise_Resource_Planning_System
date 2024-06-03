@@ -10,6 +10,9 @@
             </template>
           </el-autocomplete>
         </el-form-item>
+        <el-form-item label="价格" prop="price">
+          <el-input v-model="form.price" class="el-input" placeholder="请输入价格" type="number"></el-input>
+        </el-form-item>
         <el-form-item label="数量" prop="quantity">
           <el-input v-model="form.quantity" class="el-input" placeholder="请输入数量" type="number"></el-input>
         </el-form-item>
@@ -56,6 +59,7 @@ const employee = JSON.parse(localStorage.getItem('user') || '{}');
 const form = reactive({
   purchasingEmployeeId:employee.id,
   materialName: '',
+  price: '',
   quantity: '',
   companyName: '',
   companyTel: '',
@@ -67,6 +71,7 @@ const form = reactive({
 });
 const rules = {
   materialName: [{ required: true, message: '请选择产品', trigger: 'blur' }],
+  price: [{ required: true, message: '请输入产品价格', trigger: 'blur' }],
   quantity: [{ required: true, message: '请输入产品数量', trigger: 'blur' }],
   companyName: [{ required: true, message: '请输入公司名称', trigger: 'blur' }],
   companyTel: [{ required: true, message: '请输入公司联系方式', trigger: 'blur' }],

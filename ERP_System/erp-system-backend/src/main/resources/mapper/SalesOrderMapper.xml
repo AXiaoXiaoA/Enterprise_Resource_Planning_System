@@ -5,14 +5,20 @@
 <mapper namespace="com.changing.erpsystembackend.mapper.SalesOrderMapper">
     <!-- Insert -->
     <insert id="insertSalesOrder" parameterType="com.changing.erpsystembackend.entity.SalesOrder">
-        INSERT INTO "SalesOrder" (SALES_EMPLOYEE_ID, COMPANY_ID, QUANTITY, CONTRACT, APPLY_DATE, DESTINATION, STATUS, PRODUCT_NAME, DESCRIPTION)
-        VALUES (#{salesEmployeeId}, #{companyId}, #{quantity}, #{contract}, #{applyDate}, #{destination}, #{status}, #{productName}, #{description})
+        INSERT INTO "SalesOrder" (SALES_EMPLOYEE_ID, COMPANY_ID, QUANTITY, CONTRACT, APPLY_DATE, DESTINATION, STATUS, PRODUCT_ID, DESCRIPTION)
+        VALUES (#{salesEmployeeId}, #{companyId}, #{quantity}, #{contract}, #{applyDate}, #{destination}, #{status}, #{productId}, #{description})
     </insert>
 
     <!-- Update -->
     <update id="checkSalesOrder" parameterType="com.changing.erpsystembackend.dto.sales.CheckSalesOrderRequestDTO">
         UPDATE "SalesOrder"
         SET STATUS = #{status}
+        WHERE ID = #{id}
+    </update>
+
+    <update id="checkProductOrder" parameterType="com.changing.erpsystembackend.dto.repo.CheckProductOrderRequestDTO">
+        UPDATE "SalesOrder"
+        SET STATUS = #{status}, REPO_EMPLOYEE_ID = #{repoEmployeeId}
         WHERE ID = #{id}
     </update>
 
@@ -29,14 +35,10 @@
         so.APPLY_DATE AS APPLY_DATE,
         so.DESTINATION AS DESTINATION,
         so.STATUS AS STATUS,
-        so.PRODUCT_NAME AS SO_PRODUCT_NAME,
         so.DESCRIPTION AS DESCRIPTION,
         p.NAME AS PRODUCT_NAME,
         p.PRICE AS PRICE,
         p.INVENTORY AS INVENTORY,
-        p.REMAINING AS REMAINING,
-        p.MATERIAL_ID AS MATERIAL_ID,
-        p.MATERIAL_CONSUME AS MATERIAL_CONSUME,
         e1.PASSWORD AS SALES_EMPLOYEE_PASSWORD,
         e1.DEPARTMENT AS SALES_EMPLOYEE_DEPARTMENT,
         e1.POSITION AS SALES_EMPLOYEE_POSITION,
@@ -77,17 +79,28 @@
         LEFT JOIN "Person" pi1 ON e1.PERSON_ID = pi1.ID
         LEFT JOIN "Person" pi2 ON e2.PERSON_ID = pi2.ID
         WHERE 1=1
-        <if test="employeeId != null and employeeId != ''">
-            AND e1.ID = #{employeeId}
+        <if test="salesEmployeeId != null and salesEmployeeId != ''">
+            AND e1.ID = #{salesEmployeeId}
         </if>
-        <if test="employeeName != null and employeeName != ''">
-            AND pi1.NAME LIKE '%' || #{employeeName} || '%'
+        <if test="pending == 'notShow'">
+            AND so.REPO_EMPLOYEE_ID IS NULL
+        </if>
+        <if test="pending != 'notShow'">
+            <if test="repoEmployeeId != null and repoEmployeeId != ''">
+                AND e2.ID = #{repoEmployeeId}
+            </if>
+        </if>
+        <if test="salesEmployeeName != null and salesEmployeeName != ''">
+            AND pi1.NAME LIKE '%' || #{salesEmployeeName} || '%'
+        </if>
+        <if test="repoEmployeeName != null and repoEmployeeName != ''">
+            AND pi2.NAME LIKE '%' || #{repoEmployeeName} || '%'
         </if>
         <if test="id != null and id != ''">
             AND so.ID = #{id}
         </if>
         <if test="productName != null and productName != ''">
-            AND so.PRODUCT_NAME LIKE '%' || #{productName} || '%'
+            AND p.NAME LIKE '%' || #{productName} || '%'
         </if>
         <if test="companyName != null and companyName != ''">
             AND c.NAME LIKE '%' || #{companyName} || '%'
@@ -118,14 +131,10 @@
         so.APPLY_DATE AS APPLY_DATE,
         so.DESTINATION AS DESTINATION,
         so.STATUS AS STATUS,
-        so.PRODUCT_NAME AS SO_PRODUCT_NAME,
         so.DESCRIPTION AS DESCRIPTION,
         p.NAME AS PRODUCT_NAME,
         p.PRICE AS PRICE,
         p.INVENTORY AS INVENTORY,
-        p.REMAINING AS REMAINING,
-        p.MATERIAL_ID AS MATERIAL_ID,
-        p.MATERIAL_CONSUME AS MATERIAL_CONSUME,
         e1.PASSWORD AS SALES_EMPLOYEE_PASSWORD,
         e1.DEPARTMENT AS SALES_EMPLOYEE_DEPARTMENT,
         e1.POSITION AS SALES_EMPLOYEE_POSITION,
@@ -179,16 +188,12 @@
         <result property="applyDate" column="APPLY_DATE" />
         <result property="destination" column="DESTINATION" />
         <result property="status" column="STATUS" />
-        <result property="productName" column="SO_PRODUCT_NAME" />
         <result property="description" column="DESCRIPTION" />
         <association property="product" javaType="com.changing.erpsystembackend.entity.Product">
             <id property="id" column="PRODUCT_ID" />
             <result property="name" column="PRODUCT_NAME" />
             <result property="price" column="PRICE" />
             <result property="inventory" column="INVENTORY" />
-            <result property="remaining" column="REMAINING" />
-            <result property="materialId" column="MATERIAL_ID" />
-            <result property="materialConsume" column="MATERIAL_CONSUME" />
         </association>
         <association property="salesEmployee" javaType="com.changing.erpsystembackend.entity.Employee">
             <id property="id" column="SALES_EMPLOYEE_ID" />

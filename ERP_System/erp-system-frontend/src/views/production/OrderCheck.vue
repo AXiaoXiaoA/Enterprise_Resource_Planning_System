@@ -1,7 +1,6 @@
 <template>
   <div class="container">
     <div class="search-box">
-      <el-input v-if="employee.position === '部长'" placeholder="请输入员工姓名" v-model="searchCriteria.salesEmployeeName" />
       <el-input placeholder="请输入订单号" v-model="searchCriteria.id"/>
       <el-input placeholder="请输入商品名称" v-model="searchCriteria.productName"/>
       <el-input placeholder="请输入交易公司" v-model="searchCriteria.companyName"/>
@@ -92,25 +91,25 @@
 
         <el-table :data="salesOrder.items" border class="custom-table">
           <el-table-column label="产品信息" align="center">
-          <template #default="{row}">
-            <el-table :data="[row.product]" border>
-              <el-table-column label="产品ID">
-                <template #default="{row}">
-                  <span v-if="row.id !== '无'">{{ row.id }}</span><span v-else>无</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="产品名称">
-                <template #default="{row}">
-                  <span v-if="row.name !== '无'">{{ row.name }}</span><span v-else>无</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="产品价格">
-                <template #default="{row}">
-                  <span v-if="row.price !== '无'">{{ row.price }}</span><span v-else>无</span>
-                </template>
-              </el-table-column>
-            </el-table>
-          </template>
+            <template #default="{row}">
+              <el-table :data="[row.product]" border>
+                <el-table-column label="产品ID">
+                  <template #default="{row}">
+                    <span v-if="row.id !== '无'">{{ row.id }}</span><span v-else>无</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="产品名称">
+                  <template #default="{row}">
+                    <span v-if="row.name !== '无'">{{ row.name }}</span><span v-else>无</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="产品价格">
+                  <template #default="{row}">
+                    <span v-if="row.price !== '无'">{{ row.price }}</span><span v-else>无</span>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </template>
           </el-table-column>
         </el-table>
 
@@ -205,33 +204,24 @@
 
       <template #footer>
         <div class="footer-buttons">
-          <el-button v-if="employee.position === '部长' && salesOrder.items[0].status === '等待部长审批'"
+          <el-button v-if="salesOrder.items[0].status === '等待生产部审批'"
                      type="success"
-                     @click="checkOrder('等待仓储部审批')"
-                     class="decision-button">通过</el-button>
-          <el-button v-if="employee.position === '部长' && salesOrder.items[0].status === '等待部长审批'"
+                     @click="checkOrder('生产部生产中')"
+                     class="decision-button">确认生产</el-button>
+          <el-button v-if="salesOrder.items[0].status === '等待生产部审批'"
                      type="danger"
-                     @click="checkOrder('部长打回')"
+                     @click="checkOrder('生产部打回')"
                      class="decision-button">打回</el-button>
 
-          <el-button v-if="employee.position === '部长' && salesOrder.items[0].status === '仓储部打回'"
-                     type="danger"
-                     @click="checkOrder('等待仓储部审批')"
-                     class="decision-button">重新提交</el-button>
-          <el-button v-if="employee.position === '部长' && salesOrder.items[0].status === '仓储部打回'"
-                     type="danger"
-                     @click="checkOrder('部长打回')"
-                     class="decision-button">打回</el-button>
-
-          <el-button v-if="employee.position === '部员' && salesOrder.items[0].status === '部长打回'"
+          <el-button v-if="salesOrder.items[0].status === '验收不合格'"
                      type="success"
-                     @click="checkOrder('等待部长审批')"
-                     class="decision-button">重新提交</el-button>
+                     @click="checkOrder('生产部生产中')"
+                     class="decision-button">重新生产</el-button>
 
-          <el-button v-if="salesOrder.items[0].status === '已交货'"
+          <el-button v-if="salesOrder.items[0].status === '生产部生产中'"
                      type="success"
-                     @click="checkOrder('已完成')"
-                     class="decision-button">完成订单</el-button>
+                     @click="checkOrder('等待仓储部验收')"
+                     class="decision-button">生产完成</el-button>
         </div>
       </template>
     </el-dialog>
@@ -288,7 +278,7 @@ const loadData = (page = 1) => {
   if (employee.position === '部员') {
     searchCriteria.salesEmployeeId = employee.id;
   }
-  axios.post('/api/sales/searchOrder', searchCriteria)
+  axios.post('/api/production/searchOrder', searchCriteria)
       .then(response => {
         const res = response.data;
         tableData.items = res.data.map(item => ({
@@ -320,7 +310,7 @@ const salesOrder = reactive({
 });
 const searchOrderDetail = (row) => {
   selectedId.value = row.id;
-  axios.post('/api/sales/searchOrderDetail', { id: selectedId.value })
+  axios.post('/api/production/searchOrderDetail', { id: selectedId.value })
       .then(response => {
         console.log('Response received:', response.data);
         const res = response.data;
@@ -374,7 +364,7 @@ const dialogVisible = ref(false);
 const selectedId = ref(0);
 const searchContract = (row) => {
   selectedId.value = row.id;
-  axios.get('/api/sales/searchContract', { params: { id: selectedId.value } })
+  axios.get('/api/production/searchContract', { params: { id: selectedId.value } })
       .then(response => {
         text.value = response.data.data;
         dialogVisible.value = true;
@@ -391,7 +381,7 @@ const checkOrder = (status)=>{
     id: selectedId.value,
     status: status
   };
-  axios.post('/api/sales/checkOrder', requestData)
+  axios.post('/api/production/checkOrder', requestData)
       .then(res=>{
         if(res.data.code==='200'){
           ElMessage.success('操作成功');

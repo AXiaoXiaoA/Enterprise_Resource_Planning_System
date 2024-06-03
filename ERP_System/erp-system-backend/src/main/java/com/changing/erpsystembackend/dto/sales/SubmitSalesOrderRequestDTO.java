@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 public class SubmitSalesOrderRequestDTO {
     private Long salesEmployeeId;
     private String productName;
+    private Double price;
     private int quantity;
     private String companyName;
     private Long companyTel;

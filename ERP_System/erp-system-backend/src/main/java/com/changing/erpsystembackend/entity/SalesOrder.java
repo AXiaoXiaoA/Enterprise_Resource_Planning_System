@@ -27,6 +27,5 @@ public class SalesOrder {
     private java.sql.Date applyDate;
     private String destination;
     private String status;
-    private String productName;
     private String description;
 }
