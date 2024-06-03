@@ -94,6 +94,31 @@
         WHERE ID = #{id}
     </select>
 
+    <select id="findEmployeeByPersonId" resultMap="EmployeeResultMap">
+        SELECT
+            e.ID AS employee_id,
+            e.PASSWORD,
+            e.DEPARTMENT,
+            e.POSITION,
+            e.START_DATE,
+            e.END_DATE,
+            e.STATUS,
+            e.RESUME,
+            e.PERSON_ID,
+            p.ID AS person_id,
+            p.NAME,
+            p.GENDER,
+            p.NATIONALITY,
+            p.BIRTHDAY,
+            p.BIRTHPLACE,
+            p.POLITICALSTATUS,
+            p.TEL,
+            p.EMAIL
+        FROM
+            "Employee" e JOIN "Person" p ON e.ID = p.ID
+        WHERE e.ID = #{id}
+    </select>
+
     <resultMap id="EmployeeResultMap" type="com.changing.erpsystembackend.entity.Employee">
         <id column="employee_id" property="id"/>
         <result column="PASSWORD" property="password"/>

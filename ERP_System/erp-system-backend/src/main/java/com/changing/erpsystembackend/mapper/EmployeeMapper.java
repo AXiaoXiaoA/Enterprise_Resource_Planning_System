@@ -30,4 +30,5 @@ public interface EmployeeMapper {
     List<Employee> findEmployee(SearchEmployeeRequestDTO searchEmployeeRequest);
     @Results({@Result(column = "resume", property = "resume", jdbcType = JdbcType.CLOB, typeHandler = ClobTypeHandler.class)})
     String findResumeById(int id);
+    Employee findEmployeeByPersonId(@Param("id") Long id);
 }

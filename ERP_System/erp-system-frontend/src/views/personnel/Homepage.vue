@@ -48,6 +48,11 @@
             <span>员工管理</span>
           </el-menu-item>
 
+          <el-menu-item index="/personnel/PersonalInformation">
+            <el-icon><Document /></el-icon>
+            <span>个人信息</span>
+          </el-menu-item>
+
           <el-menu-item index="/" @click="logout">
             <el-icon><SwitchButton /></el-icon>
             <span>退出系统</span>

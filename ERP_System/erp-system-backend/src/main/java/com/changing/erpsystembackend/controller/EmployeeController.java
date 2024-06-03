@@ -25,7 +25,6 @@ public class EmployeeController {
             return Result.success(employee);
         }
     }
-
     @PostMapping("/register")
     public Result register(@ModelAttribute RegisterRequestDTO registerRequest, @RequestPart("resume") MultipartFile resume) {
         registerRequest.setResume(resume);
@@ -33,5 +32,16 @@ public class EmployeeController {
             return Result.success("申请提交成功");
         }
         return Result.error("申请提交失败");
+    }
+
+    @PostMapping("/getPersonalInfo")
+    public Result getPersonInfo(@RequestBody Long id) {
+        System.out.println(id);
+        Employee employee = employeeService.getPersonalInfo(id);
+        if(employee == null){
+            return Result.error("获取个人信息失败");
+        }else{
+            return Result.success(employee);
+        }
     }
 }

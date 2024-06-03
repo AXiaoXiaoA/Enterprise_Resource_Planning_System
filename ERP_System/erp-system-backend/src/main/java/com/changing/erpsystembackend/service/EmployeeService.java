@@ -63,4 +63,8 @@ public class EmployeeService {
             return false;
         }
     }
+
+    public Employee getPersonalInfo(Long id) {
+        return employeeMapper.findEmployeeByPersonId(id);
+    }
 }

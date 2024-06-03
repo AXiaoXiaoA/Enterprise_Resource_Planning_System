@@ -35,7 +35,7 @@
     <div class="table-container">
       <div class="table-wrapper">
         <el-table v-if="tableData.items.length > 0" :data="tableData.items" style="width: 100%" class="custom-table">
-          <el-table-column v-for="column in columns" :key="column.prop" :prop="column.prop" :label="column.label" :align="column.align"/>
+          <el-table-column v-for="column in columns" :key="column.prop" :prop="column.prop" :label="column.label" :align="column.align" :sortable="true"/>
           <el-table-column label="订单状态" align="center">
             <template #default="scope">
               <span :class="statusClass(scope.row.status)">{{ scope.row.status }}</span>
@@ -51,6 +51,7 @@
       </div>
       <div class="pagination-box">
         <el-pagination background layout="prev, pager, next" :total="totalItems" :page-size="pageSize" @current-change="handlePageChange"/>
+        <el-button type="primary" @click="exportTable">导出表格</el-button>
       </div>
     </div>
 
@@ -247,12 +248,12 @@ import axios from 'axios';
 const columns = [
   { prop: 'id', label: '订单号', align: 'center' },
   { prop: 'productName', label: '产品名称', align: 'center' },
-  { prop: 'quantity', label: '产品数量(吨)', align: 'center' },
+  { prop: 'quantity', label: '产品数量', align: 'center' },
   { prop: 'companyName', label: '交易公司', align: 'center' },
   { prop: 'destination', label: '目的地', align: 'center' },
   { prop: 'date', label: '订单日期', align: 'center' },
-  { prop: 'salesEmployeeName', label: '销售部负责人', align: 'center' },
-  { prop: 'repoEmployeeName', label: '仓储部负责人', align: 'center' },
+  { prop: 'salesEmployeeName', label: '销售部部员', align: 'center' },
+  { prop: 'repoEmployeeName', label: '仓储部部员', align: 'center' },
 ];
 const statusClass = (status) => {
   if (/等待/.test(status) || /运输/.test(status) || /生产/.test(status)) {
@@ -413,6 +414,25 @@ const reset = () => {
   searchCriteria.startDate = '';
   searchCriteria.endDate = '';
   loadData();
+};
+
+// 导出表格
+const exportTable = () => {
+  const items = tableData.items;
+  const headers = columns.map(column => column.label).join(',') + '\n';
+  const rows = items.map(item => columns.map(column => item[column.prop]).join(',')).join('\n');
+  const csvContent = headers + rows;
+
+  const BOM = '\uFEFF';
+  const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  link.setAttribute('href', url);
+  link.setAttribute('download', 'table_data.csv');
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 };
 
 // 分页
