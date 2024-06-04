@@ -25,6 +25,9 @@ const router = createRouter({
         },
         {
           path:'/Personnel/EmployeeManage', name:'personnel_employeeManage', component:()=>import('@/views/personnel/EmployeeManage.vue'),
+        },
+        {
+          path:'/Personnel/PersonalInformation', name:'personnel_personalInformation', component:()=>import('@/views/personnel/PersonalInformation.vue'),
         }
       ]
     },
