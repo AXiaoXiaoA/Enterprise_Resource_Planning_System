@@ -15,4 +15,11 @@
         FROM "Company"
         WHERE NAME = #{name}
     </select>
+
+    <select id="findCompanyOrderByName" parameterType="com.changing.erpsystembackend.entity.Company" resultType="java.lang.Long">
+        SELECT ID
+        FROM "Company"
+        WHERE NAME = #{name}
+        ORDER BY NAME
+    </select>
 </mapper>

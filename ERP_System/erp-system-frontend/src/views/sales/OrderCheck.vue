@@ -171,7 +171,7 @@
         <el-table :data="salesOrder.items" border class="custom-table">
           <el-table-column label="仓储部员信息" align="center">
             <template #default="{row}">
-              <el-table :data="[row.repoEmployee]" border>
+              <el-table v-if="row.repoEmployee" :data="[row.repoEmployee]" border>
                 <el-table-column label="仓储部员工号">
                   <template #default="{row}">
                     <span v-if="row.id !== '无'">{{ row.id }}</span><span v-else>无</span>
@@ -201,7 +201,9 @@
             </template>
           </el-table-column>
         </el-table>
-
+        <div class="decision-box">
+          <el-button type="primary" @click="searchContract" class="decision-button">查看合同</el-button>
+        </div>
       </el-card>
 
       <template #footer>
@@ -368,21 +370,18 @@ const searchOrderDetail = (row) => {
       });
 };
 
-
 // 查看合同
-const text = ref('');
 const dialogVisible = ref(false);
 const selectedId = ref(0);
-const searchContract = (row) => {
-  selectedId.value = row.id;
+const searchContract = () => {
   axios.get('/api/sales/searchContract', { params: { id: selectedId.value } })
       .then(response => {
-        text.value = response.data.data;
-        dialogVisible.value = true;
+        const blob = new Blob([response.data], { type: 'application/pdf' });
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, '_blank');
       })
       .catch(error => {
-        ElMessage.error("获取详情失败");
-        console.error('Error fetching resume:', error);
+        ElMessage.error("获取合同失败");
       });
 };
 

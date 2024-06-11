@@ -28,7 +28,7 @@ public class ProductionService {
     public List<SalesOrder> searchSalesOrderDetail(SalesOrderDetailRequestDTO salesOrderDetailRequest) {
         return salesOrderMapper.findSalesOrderById(salesOrderDetailRequest.getId());
     }
-    public Object searchContract(int id) {
+    public Object searchContract(Long id) {
         return salesOrderMapper.findSalesContractById(id);
     }
     public boolean checkSalesOrder(CheckSalesOrderRequestDTO checkSalesOrderRequest) {

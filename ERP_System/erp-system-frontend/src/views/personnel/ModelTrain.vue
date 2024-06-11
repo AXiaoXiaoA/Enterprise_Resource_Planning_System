@@ -36,7 +36,7 @@
             <el-button type="primary" round style="margin-left:10px;" @click="analysis">开始训练</el-button>
             <el-button type="danger" round @click="reset">终止训练</el-button>
         </div>
-        
+
         <!-- 只有在 result 有值的情况下显示结果 -->
         <div class="result_box" v-if="result">
             <el-col :sm="15" :lg="6">

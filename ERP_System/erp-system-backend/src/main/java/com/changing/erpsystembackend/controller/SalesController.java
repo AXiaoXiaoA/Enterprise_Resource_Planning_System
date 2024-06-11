@@ -29,8 +29,9 @@ public class SalesController {
 		return Result.success(salesService.searchSalesOrderDetail(salesOrderDetailRequest));
 	}
 	@GetMapping("/searchContract")
-	public Result searchContract(@RequestParam("id") int id) {
-		return Result.success(salesService.searchContract(id));
+	public Result searchContract(@RequestParam("id") Long id) {
+		byte[] contract = salesService.searchContract(id);
+		return Result.success(contract);
 	}
 	@PostMapping("/checkOrder")
 	public Result checkOrder(@RequestBody CheckSalesOrderRequestDTO checkSalesOrderRequest){

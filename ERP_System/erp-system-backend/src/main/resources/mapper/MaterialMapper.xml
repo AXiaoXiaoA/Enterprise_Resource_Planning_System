@@ -45,5 +45,6 @@
         <if test="name != null and name != '' ">
             AND NAME LIKE '%' || #{name} || '%'
         </if>
+        ORDER BY NAME
     </select>
 </mapper>

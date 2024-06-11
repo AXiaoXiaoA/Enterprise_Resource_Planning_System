@@ -67,7 +67,7 @@ public class RepoService {
     public List<SalesOrder> searchProductOrderDetail(SalesOrderDetailRequestDTO salesOrderDetailRequest) {
         return salesOrderMapper.findSalesOrderById(salesOrderDetailRequest.getId());
     }
-    public Object searchProductContract(int id) {
+    public Object searchProductContract(Long id) {
         return salesOrderMapper.findSalesContractById(id);
     }
     public boolean checkProductOrder(CheckProductOrderRequestDTO checkProductOrderRequest) {

@@ -22,5 +22,5 @@ public interface SalesOrderMapper {
     // select
     List<SalesOrder> findSalesOrder(SearchSalesOrderRequestDTO searchSalesOrderRequest);
     List<SalesOrder> findSalesOrderById(Long id);
-    List<SalesOrder> findSalesContractById(@Param("id") int id);
+    byte[] findSalesContractById(@Param("id") Long id);
 }

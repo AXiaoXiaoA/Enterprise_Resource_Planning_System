@@ -171,7 +171,7 @@
         <el-table :data="purchasingOrder.items" border class="custom-table">
           <el-table-column label="仓储部员信息" align="center">
             <template #default="{row}">
-              <el-table :data="[row.repoEmployee]" border>
+              <el-table v-if="row.repoEmployee" :data="[row.repoEmployee]" border>
                 <el-table-column label="仓储部员工号">
                   <template #default="{row}">
                     <span v-if="row.id !== '无'">{{ row.id }}</span><span v-else>无</span>

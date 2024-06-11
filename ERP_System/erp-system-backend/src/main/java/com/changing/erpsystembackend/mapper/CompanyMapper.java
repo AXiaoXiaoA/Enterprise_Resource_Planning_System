@@ -11,4 +11,5 @@ public interface CompanyMapper {
 
     // select
     Long findCompanyIdByName(@Param("name") String name);
+    Company findCompanyOrderByName(@Param("name") String name);
 }

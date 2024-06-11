@@ -14,8 +14,8 @@
           <el-form-item label="性别" prop="gender">
             <div class="mb-2 flex items-center text-sm">
               <el-radio-group v-model="data.form.gender" class="ml-4">
-                <el-radio class="male-color" label="male" size="large">男</el-radio>
-                <el-radio class="female-color" label="female" size="large">女</el-radio>
+                <el-radio class="male-color" label="男" size="large">男</el-radio>
+                <el-radio class="female-color" label="女" size="large">女</el-radio>
               </el-radio-group>
             </div>
           </el-form-item>

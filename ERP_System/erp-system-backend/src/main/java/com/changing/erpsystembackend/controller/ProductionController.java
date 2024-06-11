@@ -26,7 +26,7 @@ public class ProductionController {
 		return Result.success(productionService.searchSalesOrderDetail(salesOrderDetailRequest));
 	}
 	@GetMapping("/searchContract")
-	public Result searchContract(@RequestParam("id") int id) {
+	public Result searchContract(@RequestParam("id") Long id) {
 		return Result.success(productionService.searchContract(id));
 	}
 	@PostMapping("/checkOrder")

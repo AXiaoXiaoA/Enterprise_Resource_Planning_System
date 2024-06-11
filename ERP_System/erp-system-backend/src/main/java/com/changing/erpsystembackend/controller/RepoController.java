@@ -57,7 +57,7 @@ public class RepoController {
 		return Result.success(repoService.searchProductOrderDetail(salesOrderDetailRequest));
 	}
 	@GetMapping("/searchProductContract")
-	public Result searchProductContract(@RequestParam("id") int id) {
+	public Result searchProductContract(@RequestParam("id") Long id) {
 		return Result.success(repoService.searchProductContract(id));
 	}
 	@PostMapping("/checkProductOrder")

@@ -132,12 +132,16 @@ const beforeUpload = (file) => {
 const handleUploadChange = (file, fileList) => {
   form.contract = fileList;
   if (fileList.length > 0) {
-    console.log('Uploaded file response:', fileList[0].response);
-    form.contractData = fileList[0].response;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      form.contractData = e.target.result;
+    };
+    reader.readAsDataURL(fileList[0].raw);
   } else {
     form.contractData = '';
   }
 };
+
 
 // 提交和重置表单
 const formRef = ref(null);

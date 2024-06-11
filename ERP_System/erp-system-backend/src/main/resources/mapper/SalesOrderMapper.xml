@@ -177,6 +177,12 @@
         WHERE so.ID = #{id}
     </select>
 
+    <select id="findSalesContractById" parameterType="java.lang.Long" resultType="byte[]">
+        SELECT CONTRACT
+        FROM "SalesOrder"
+        WHERE ID = #{id}
+    </select>
+
     <resultMap id="SalesOrderResultMap" type="com.changing.erpsystembackend.entity.SalesOrder">
         <id property="id" column="ID" />
         <result property="productId" column="PRODUCT_ID" />
