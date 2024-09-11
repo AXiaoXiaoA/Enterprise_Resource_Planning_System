@@ -20,8 +20,8 @@
         <el-input v-model="searchCriteria.ageEnd" type="number" placeholder="年龄止" style="width: 120px;"/>
       </div>
       <el-select placeholder="请选择性别" v-model="searchCriteria.gender">
-        <el-option label="男" value="male"></el-option>
-        <el-option label="女" value="female"></el-option>
+        <el-option label="男" value="男"></el-option>
+        <el-option label="女" value="女"></el-option>
       </el-select>
       <el-switch v-model="searchCriteria.status" active-text="显示已拒绝" active-value="已拒绝" inactive-text="隐藏已拒绝" inactive-value="应聘中"/>
       <div class="search-buttons">
@@ -44,7 +44,6 @@
       </div>
       <div class="pagination-box">
         <el-pagination background layout="prev, pager, next" :total="totalItems" :page-size="pageSize" @current-change="handlePageChange"/>
-        <el-button type="primary" @click="exportTable">导出表格</el-button>
       </div>
     </div>
 
@@ -227,25 +226,6 @@ const rejectApply = ()=>{
         }
   })
 }
-
-// 导出表格
-const exportTable = () => {
-  const items = tableData.items;
-  const headers = columns.map(column => column.label).join(',') + '\n';
-  const rows = items.map(item => columns.map(column => item[column.prop]).join(',')).join('\n');
-  const csvContent = headers + rows;
-
-  const BOM = '\uFEFF';
-  const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  const url = URL.createObjectURL(blob);
-  link.setAttribute('href', url);
-  link.setAttribute('download', 'table_data.csv');
-  link.style.visibility = 'hidden';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-};
 
 const reset = () => {
   searchCriteria.id = '';

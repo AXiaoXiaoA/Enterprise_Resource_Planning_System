@@ -17,19 +17,19 @@
           <el-col :span="8">
             <el-card shadow="hover" class="overview-card">
               <h3>库存总量</h3>
-              <p class="overview-number">{{ totalInventory }}</p>
+              <p class="overview-number">186</p>
             </el-card>
           </el-col>
           <el-col :span="8">
             <el-card shadow="hover" class="overview-card">
               <h3>本月入库</h3>
-              <p class="overview-number">{{ monthlyInbound }}</p>
+              <p class="overview-number">23</p>
             </el-card>
           </el-col>
           <el-col :span="8">
             <el-card shadow="hover" class="overview-card">
               <h3>本月出库</h3>
-              <p class="overview-number">{{ monthlyOutbound }}</p>
+              <p class="overview-number">79</p>
             </el-card>
           </el-col>
         </el-row>
@@ -117,112 +117,106 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue';
-import axios from 'axios';
+import { ref, onMounted } from 'vue';
 import * as echarts from 'echarts';
 
-const totalInventory = ref(0);
-const monthlyInbound = ref(0);
-const monthlyOutbound = ref(0);
+// Mock data for overview
+const totalInventory = ref(5000);
+const monthlyInbound = ref(1200);
+const monthlyOutbound = ref(900);
 
-onMounted(async () => {
-  try {
-    const inventoryResponse = await axios.get('/api/repo/totalInventory');
-    totalInventory.value = inventoryResponse.data.total;
-
-    const monthlyInboundResponse = await axios.get('/api/repo/monthlyInbound');
-    monthlyInbound.value = monthlyInboundResponse.data.monthly;
-
-    const monthlyOutboundResponse = await axios.get('/api/repo/monthlyOutbound');
-    monthlyOutbound.value = monthlyOutboundResponse.data.monthly;
-  } catch (error) {
-    console.error(error);
-  }
-});
-
+// Mock data for charts
 const inboundTrendChartRef = ref(null);
-const inboundTrendChartContainerRef = ref(null);
-onMounted(async () => {
-  try {
-    const response = await axios.get('/api/repo/inboundTrend');
-    inboundTrendChartRef.value = response.data;
-
-    const inboundTrendChart = echarts.init(inboundTrendChartContainerRef.value);
-    const xAxisData = inboundTrendChartRef.value.map(entry => entry.date);
-    const seriesData = inboundTrendChartRef.value.map(entry => entry.amount);
-
-    const option = {
-      color: ['#67C23A'],
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          type: 'shadow'
-        }
-      },
-      xAxis: {
-        type: 'category',
-        data: xAxisData
-      },
-      yAxis: {
-        type: 'value',
-        minInterval: 1
-      },
-      series: [{
-        data: seriesData,
-        type: 'line'
-      }]
-    };
-    inboundTrendChart.setOption(option);
-
-    window.addEventListener('resize', () => {
-      inboundTrendChart.resize();
-    });
-  } catch (error) {
-    console.error(error);
-  }
-});
-
 const outboundTrendChartRef = ref(null);
-const outboundTrendChartContainerRef = ref(null);
-onMounted(async () => {
-  try {
-    const response = await axios.get('/api/repo/outboundTrend');
-    outboundTrendChartRef.value = response.data;
 
-    const outboundTrendChart = echarts.init(outboundTrendChartContainerRef.value);
-    const xAxisData = outboundTrendChartRef.value.map(entry => entry.date);
-    const seriesData = outboundTrendChartRef.value.map(entry => entry.amount);
+const mockInboundTrendData = [
+  { date: '2024-06-01', amount: 50 },
+  { date: '2024-06-02', amount: 70 },
+  { date: '2024-06-03', amount: 65 },
+  { date: '2024-06-04', amount: 80 },
+  { date: '2024-06-05', amount: 90 },
+];
 
-    const option = {
-      color: ['#E6A23C'],
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          type: 'shadow'
-        }
-      },
-      xAxis: {
-        type: 'category',
-        data: xAxisData
-      },
-      yAxis: {
-        type: 'value',
-        minInterval: 1
-      },
-      series: [{
-        data: seriesData,
-        type: 'line'
-      }]
-    };
-    outboundTrendChart.setOption(option);
+const mockOutboundTrendData = [
+  { date: '2024-06-01', amount: 40 },
+  { date: '2024-06-02', amount: 60 },
+  { date: '2024-06-03', amount: 55 },
+  { date: '2024-06-04', amount: 70 },
+  { date: '2024-06-05', amount: 75 },
+];
 
-    window.addEventListener('resize', () => {
-      outboundTrendChart.resize();
-    });
-  } catch (error) {
-    console.error(error);
-  }
+onMounted(() => {
+  // Initialize inbound trend chart
+  inboundTrendChartRef.value = mockInboundTrendData;
+
+  const inboundTrendChart = echarts.init(inboundTrendChartContainerRef.value);
+  const inboundXAxisData = inboundTrendChartRef.value.map(entry => entry.date);
+  const inboundSeriesData = inboundTrendChartRef.value.map(entry => entry.amount);
+
+  const inboundOption = {
+    color: ['#67C23A'],
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      }
+    },
+    xAxis: {
+      type: 'category',
+      data: inboundXAxisData
+    },
+    yAxis: {
+      type: 'value',
+      minInterval: 1
+    },
+    series: [{
+      data: inboundSeriesData,
+      type: 'line'
+    }]
+  };
+  inboundTrendChart.setOption(inboundOption);
+
+  window.addEventListener('resize', () => {
+    inboundTrendChart.resize();
+  });
+
+  // Initialize outbound trend chart
+  outboundTrendChartRef.value = mockOutboundTrendData;
+
+  const outboundTrendChart = echarts.init(outboundTrendChartContainerRef.value);
+  const outboundXAxisData = outboundTrendChartRef.value.map(entry => entry.date);
+  const outboundSeriesData = outboundTrendChartRef.value.map(entry => entry.amount);
+
+  const outboundOption = {
+    color: ['#E6A23C'],
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      }
+    },
+    xAxis: {
+      type: 'category',
+      data: outboundXAxisData
+    },
+    yAxis: {
+      type: 'value',
+      minInterval: 1
+    },
+    series: [{
+      data: outboundSeriesData,
+      type: 'line'
+    }]
+  };
+  outboundTrendChart.setOption(outboundOption);
+
+  window.addEventListener('resize', () => {
+    outboundTrendChart.resize();
+  });
 });
+
+const inboundTrendChartContainerRef = ref(null);
+const outboundTrendChartContainerRef = ref(null);
 
 const notices = ref([
   { date: '2023-01-04', content: '下周一将举行仓库管理培训，请仓储部员工准时参加。' },

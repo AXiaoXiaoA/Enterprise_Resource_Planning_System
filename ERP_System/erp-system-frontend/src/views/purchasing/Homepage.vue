@@ -25,11 +25,11 @@
 
           <el-menu-item index="/purchasing/OrderCheck">
             <el-icon><Document /></el-icon>
-            <span>查看订单</span>
+            <span>查看采购单</span>
           </el-menu-item>
           <el-menu-item index="/purchasing/OrderSubmit">
             <el-icon><Document /></el-icon>
-            <span>提交订单</span>
+            <span>提交采购单</span>
           </el-menu-item>
 
           <el-menu-item index="/person" v-if="employee.position === 'sales'">

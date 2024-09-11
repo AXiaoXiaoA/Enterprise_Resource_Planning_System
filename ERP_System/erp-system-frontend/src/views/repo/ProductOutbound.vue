@@ -27,7 +27,7 @@
             style="margin: 0 10px;"
         />
       </div>
-      <el-switch v-model="searchCriteria.pending" active-text="隐藏已处理" active-value="notShow" inactive-text="显示已处理" inactive-value="show" />
+      <el-switch v-model="searchCriteria.pending" active-text="显示未处理" active-value="notShow" inactive-text="显示已处理" inactive-value="show" />
       <div class="search-buttons">
         <el-button type="primary" round @click="search">查询</el-button>
         <el-button type="warning" round @click="reset">重置</el-button>
@@ -52,7 +52,6 @@
       </div>
       <div class="pagination-box">
         <el-pagination background layout="prev, pager, next" :total="totalItems" :page-size="pageSize" @current-change="handlePageChange"/>
-        <el-button type="primary" @click="exportTable">导出表格</el-button>
       </div>
     </div>
 
@@ -172,7 +171,7 @@
         <el-table :data="productOrder.items" border class="custom-table">
           <el-table-column label="仓储部员信息" align="center">
             <template #default="{row}">
-              <el-table v-if="row.repoEmployee" :data="[row.repoEmployee]" border>
+              <el-table :data="[row.repoEmployee]" border>
                 <el-table-column label="仓储部员工号">
                   <template #default="{row}">
                     <span v-if="row.id !== '无'">{{ row.id }}</span><span v-else>无</span>
@@ -427,25 +426,6 @@ const reset = () => {
   searchCriteria.endDate = '';
   searchCriteria.pending = 'show';
   loadData();
-};
-
-// 导出表格
-const exportTable = () => {
-  const items = tableData.items;
-  const headers = columns.map(column => column.label).join(',') + '\n';
-  const rows = items.map(item => columns.map(column => item[column.prop]).join(',')).join('\n');
-  const csvContent = headers + rows;
-
-  const BOM = '\uFEFF';
-  const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  const url = URL.createObjectURL(blob);
-  link.setAttribute('href', url);
-  link.setAttribute('download', 'table_data.csv');
-  link.style.visibility = 'hidden';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
 };
 
 // 分页

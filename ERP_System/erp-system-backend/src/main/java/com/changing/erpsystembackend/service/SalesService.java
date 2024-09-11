@@ -52,8 +52,11 @@ public class SalesService {
         }
         salesOrder.setCompanyId(companyMapper.findCompanyIdByName(submitSalesOrderRequest.getCompanyName()));
         salesOrder.setQuantity(submitSalesOrderRequest.getQuantity());
-        byte[] contractBytes = Base64.getDecoder().decode(submitSalesOrderRequest.getContractData().split(",")[1]);
-        salesOrder.setContract(contractBytes);
+        if (submitSalesOrderRequest.getContractData() == null) {
+            salesOrder.setContract(null);
+        } else {
+            salesOrder.setContract(Base64.getDecoder().decode(submitSalesOrderRequest.getContractData()));
+        }
         salesOrder.setApplyDate(new java.sql.Date(System.currentTimeMillis()));
         salesOrder.setDestination(submitSalesOrderRequest.getDestination());
         salesOrder.setStatus(submitSalesOrderRequest.getStatus());

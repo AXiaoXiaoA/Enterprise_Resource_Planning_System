@@ -23,24 +23,10 @@
             <span>系统首页</span>
           </el-menu-item>
 
-          <el-sub-menu index="order">
-            <template #title>
-              <el-icon><Memo /></el-icon>
-              <span>智能聘用模型</span>
-            </template>
-            <el-menu-item index="/personnel/ModelParam">
-              <el-icon><Document /></el-icon>
-              <span>模型参数</span>
-            </el-menu-item>
-            <el-menu-item index="/personnel/ModelTrain">
-              <el-icon><Document /></el-icon>
-              <span>模型训练</span>
-            </el-menu-item>
-          </el-sub-menu>
 
           <el-menu-item index="/personnel/ApplyReview">
             <el-icon><Document /></el-icon>
-            <span>聘用审核</span>
+            <span>智能聘用审核</span>
           </el-menu-item>
 
           <el-menu-item index="/personnel/EmployeeManage">
@@ -48,10 +34,6 @@
             <span>员工管理</span>
           </el-menu-item>
 
-          <el-menu-item index="/personnel/PersonalInformation">
-            <el-icon><Document /></el-icon>
-            <span>个人信息</span>
-          </el-menu-item>
 
           <el-menu-item index="/" @click="logout">
             <el-icon><SwitchButton /></el-icon>

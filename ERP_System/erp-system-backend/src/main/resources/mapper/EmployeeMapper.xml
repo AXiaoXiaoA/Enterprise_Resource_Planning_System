@@ -94,7 +94,7 @@
         WHERE ID = #{id}
     </select>
 
-    <select id="findEmployeeByPersonId" resultMap="EmployeeResultMap">
+    <select id="findEmployeeById" resultMap="EmployeeResultMap">
         SELECT
             e.ID AS employee_id,
             e.PASSWORD,
@@ -115,7 +115,7 @@
             p.TEL,
             p.EMAIL
         FROM
-            "Employee" e JOIN "Person" p ON e.ID = p.ID
+            "Employee" e JOIN "Person" p ON e.PERSON_ID = p.ID
         WHERE e.ID = #{id}
     </select>
 

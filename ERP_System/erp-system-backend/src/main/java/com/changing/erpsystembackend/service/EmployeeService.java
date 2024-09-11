@@ -65,6 +65,6 @@ public class EmployeeService {
     }
 
     public Employee getPersonalInfo(Long id) {
-        return employeeMapper.findEmployeeByPersonId(id);
+        return employeeMapper.findEmployeeById(id);
     }
 }

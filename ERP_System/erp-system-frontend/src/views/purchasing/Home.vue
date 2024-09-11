@@ -17,19 +17,19 @@
           <el-col :span="8">
             <el-card shadow="hover" class="overview-card">
               <h3>总采购额</h3>
-              <p class="overview-number">{{ totalSales }}</p>
+              <p class="overview-number">66</p>
             </el-card>
           </el-col>
           <el-col :span="8">
             <el-card shadow="hover" class="overview-card">
               <h3>本月采购额</h3>
-              <p class="overview-number">{{ monthlySales }}</p>
+              <p class="overview-number">33</p>
             </el-card>
           </el-col>
           <el-col :span="8">
             <el-card shadow="hover" class="overview-card">
               <h3>今日订单</h3>
-              <p class="overview-number">{{ todayOrders }}</p>
+              <p class="overview-number">33</p>
             </el-card>
           </el-col>
         </el-row>
@@ -250,6 +250,55 @@ const attendances = ref([
   { name: '李四', date: '2023-01-04', status: '迟到' },
   { name: '王五', date: '2023-01-04', status: '早退' },
 ]);
+onMounted(() => {
+  // 采购额趋势图
+  const purchasingTrendChart = echarts.init(salesTrendChartContainerRef.value);
+  const purchasingTrendOption = {
+    xAxis: {
+      type: 'category',
+      data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+    },
+    yAxis: {
+      type: 'value'
+    },
+    series: [{
+      data: [0, 0, 33, 0, 0, 0, 33],
+      type: 'line'
+    }]
+  };
+  purchasingTrendChart.setOption(purchasingTrendOption);
+
+  // 订单分布图
+  const ordersDistributionChart = echarts.init(ordersDistributionChartContainerRef.value);
+  const ordersDistributionOption = {
+    tooltip: {
+      trigger: 'item',
+      formatter: '{a} <br/>{b} : {c} ({d}%)'
+    },
+    legend: {
+      orient: 'vertical',
+      left: 'left',
+    },
+    series: [{
+      name: '订单来源',
+      type: 'pie',
+      radius: '50%',
+      data: [
+        { value: 335, name: '铁矿石' },
+        { value: 310, name: '铬矿石' },
+      ],
+      emphasis: {
+        itemStyle: {
+          shadowBlur: 10,
+          shadowOffsetX: 0,
+          shadowColor: 'rgba(0, 0, 0, 0.5)'
+        }
+      }
+    }]
+  };
+  ordersDistributionChart.setOption(ordersDistributionOption);
+});
+
 </script>
 
 <style lang="scss" scoped src="@/styles/home.css"></style>

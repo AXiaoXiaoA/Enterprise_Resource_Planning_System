@@ -11,8 +11,8 @@
         <el-option label="采购部" value="purchasing"></el-option>
       </el-select>
       <el-select placeholder="请选择员工职务" v-model="searchCriteria.position">
-        <el-option label="总经理" value="manager"></el-option>
-        <el-option label="普通职员" value="worker"></el-option>
+        <el-option label="部长" value="部长"></el-option>
+        <el-option label="部员" value="部员"></el-option>
       </el-select>
       <div class="age-range-input">
         <el-input v-model="searchCriteria.ageStart" type="number" placeholder="年龄起" style="width: 120px;"/>
@@ -20,8 +20,8 @@
         <el-input v-model="searchCriteria.ageEnd" type="number" placeholder="年龄止" style="width: 120px;"/>
       </div>
       <el-select placeholder="请选择员工性别" v-model="searchCriteria.gender">
-        <el-option label="男" value="male"></el-option>
-        <el-option label="女" value="female"></el-option>
+        <el-option label="男" value="男"></el-option>
+        <el-option label="女" value="女"></el-option>
       </el-select>
       <el-switch v-model="searchCriteria.status" active-text="显示已离职" inactive-text="隐藏已离职" active-value="离职" inactive-value="在职"/>
       <div class="search-buttons">
@@ -32,7 +32,7 @@
 
     <div class="table-container">
       <div class="table-wrapper">
-        <el-table v-if="tableData.items.length > 0" :data="tableData.items" style="width: 100%" class="custom-table">
+        <el-table ref="tableRef" v-if="tableData.items.length > 0" :data="tableData.items" style="width: 100%" class="custom-table">
           <el-table-column v-for="column in columns" :key="column.prop" :prop="column.prop" :label="column.label" :align="column.align" :sortable="true"/>
           <el-table-column label="简历" align="center">
             <template #default="scope">
@@ -158,22 +158,17 @@ const handlePageChange = (page) => {
 };
 
 // 导出表格
+const tableRef = ref(null);
 const exportTable = () => {
-  const items = tableData.items;
-  const headers = columns.map(column => column.label).join(',') + '\n';
-  const rows = items.map(item => columns.map(column => item[column.prop]).join(',')).join('\n');
-  const csvContent = headers + rows;
-
-  const BOM = '\uFEFF';
-  const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  const url = URL.createObjectURL(blob);
-  link.setAttribute('href', url);
-  link.setAttribute('download', 'table_data.csv');
-  link.style.visibility = 'hidden';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  const tableInstance = tableRef.value; // 获取表格实例
+  if (tableInstance) {
+    tableInstance.exportCsv({
+      filename: 'table_data.csv',
+      original: false
+    });
+  } else {
+    ElMessage.error('无法导出表格数据：找不到表格实例');
+  }
 };
 
 onMounted(() => {

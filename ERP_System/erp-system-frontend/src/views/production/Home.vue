@@ -12,45 +12,6 @@
 
         <el-divider></el-divider>
 
-        <!-- 数据概览 -->
-        <el-row :gutter="20" class="section">
-          <el-col :span="8">
-            <el-card shadow="hover" class="overview-card">
-              <h3>设备总数</h3>
-              <p class="overview-number">{{ totalEquipment }}</p>
-            </el-card>
-          </el-col>
-          <el-col :span="8">
-            <el-card shadow="hover" class="overview-card">
-              <h3>当前运行设备</h3>
-              <p class="overview-number">{{ runningEquipment }}</p>
-            </el-card>
-          </el-col>
-          <el-col :span="8">
-            <el-card shadow="hover" class="overview-card">
-              <h3>今日产量</h3>
-              <p class="overview-number">{{ todayOutput }} 吨</p>
-            </el-card>
-          </el-col>
-        </el-row>
-
-        <el-divider></el-divider>
-
-        <!-- 员工统计图表 -->
-        <el-row :gutter="20" class="section">
-          <el-col :span="12">
-            <el-card shadow="hover" class="chart-card">
-              <h2>设备使用情况</h2>
-              <div ref="equipmentUsageChartContainerRef" class="chart-container"></div>
-            </el-card>
-          </el-col>
-          <el-col :span="12">
-            <el-card shadow="hover" class="chart-card">
-              <h2>生产效率</h2>
-              <div ref="productionEfficiencyChartContainerRef" class="chart-container"></div>
-            </el-card>
-          </el-col>
-        </el-row>
 
         <el-divider></el-divider>
 
@@ -117,109 +78,105 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue';
-import axios from 'axios';
+import { ref, onMounted } from 'vue';
 import * as echarts from 'echarts';
 
-const totalEquipment = ref(0);
-const runningEquipment = ref(0);
-const todayOutput = ref(0);
+// Mock data for overview
+const totalEquipment = ref(100);
+const runningEquipment = ref(85);
+const todayOutput = ref(500);
 
-onMounted(async () => {
-  try {
-    const equipmentResponse = await axios.get('/api/production/equipmentStatistics');
-    totalEquipment.value = equipmentResponse.data.total;
-    runningEquipment.value = equipmentResponse.data.running;
-
-    const outputResponse = await axios.get('/api/production/todayOutput');
-    todayOutput.value = outputResponse.data.output;
-  } catch (error) {
-    console.error(error);
-  }
-});
-
+// Mock data for charts
 const equipmentUsageChartRef = ref(null);
 const equipmentUsageChartContainerRef = ref(null);
-onMounted(async () => {
-  try {
-    const response = await axios.get('/api/production/equipmentUsage');
-    equipmentUsageChartRef.value = response.data;
 
-    const equipmentUsageChart = echarts.init(equipmentUsageChartContainerRef.value);
-    const xAxisData = equipmentUsageChartRef.value.map(entry => entry.name);
-    const seriesData = equipmentUsageChartRef.value.map(entry => entry.usage);
-
-    const option = {
-      color: ['#3398DB'],
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          type: 'shadow'
-        }
-      },
-      xAxis: {
-        type: 'category',
-        data: xAxisData
-      },
-      yAxis: {
-        type: 'value',
-        minInterval: 1
-      },
-      series: [{
-        data: seriesData,
-        type: 'bar'
-      }]
-    };
-    equipmentUsageChart.setOption(option);
-
-    window.addEventListener('resize', () => {
-      equipmentUsageChart.resize();
-    });
-  } catch (error) {
-    console.error(error);
-  }
-});
+const mockEquipmentUsageData = [
+  { name: '设备A', usage: 70 },
+  { name: '设备B', usage: 60 },
+  { name: '设备C', usage: 80 },
+  { name: '设备D', usage: 90 },
+  { name: '设备E', usage: 50 },
+];
 
 const productionEfficiencyChartRef = ref(null);
 const productionEfficiencyChartContainerRef = ref(null);
-onMounted(async () => {
-  try {
-    const response = await axios.get('/api/production/efficiency');
-    productionEfficiencyChartRef.value = response.data;
 
-    const productionEfficiencyChart = echarts.init(productionEfficiencyChartContainerRef.value);
-    const xAxisData = productionEfficiencyChartRef.value.map(entry => entry.date);
-    const seriesData = productionEfficiencyChartRef.value.map(entry => entry.efficiency);
+const mockProductionEfficiencyData = [
+  { date: '2024-06-01', efficiency: 95 },
+  { date: '2024-06-02', efficiency: 90 },
+  { date: '2024-06-03', efficiency: 88 },
+  { date: '2024-06-04', efficiency: 92 },
+  { date: '2024-06-05', efficiency: 93 },
+];
 
-    const option = {
-      color: ['#67C23A'],
-      tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          type: 'shadow'
-        }
-      },
-      xAxis: {
-        type: 'category',
-        data: xAxisData
-      },
-      yAxis: {
-        type: 'value',
-        minInterval: 1
-      },
-      series: [{
-        data: seriesData,
-        type: 'line'
-      }]
-    };
-    productionEfficiencyChart.setOption(option);
+onMounted(() => {
+  // Initialize equipment usage chart
+  equipmentUsageChartRef.value = mockEquipmentUsageData;
 
-    window.addEventListener('resize', () => {
-      productionEfficiencyChart.resize();
-    });
-  } catch (error) {
-    console.error(error);
-  }
+  const equipmentUsageChart = echarts.init(equipmentUsageChartContainerRef.value);
+  const equipmentXAxisData = equipmentUsageChartRef.value.map(entry => entry.name);
+  const equipmentSeriesData = equipmentUsageChartRef.value.map(entry => entry.usage);
+
+  const equipmentOption = {
+    color: ['#3398DB'],
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      }
+    },
+    xAxis: {
+      type: 'category',
+      data: equipmentXAxisData
+    },
+    yAxis: {
+      type: 'value',
+      minInterval: 1
+    },
+    series: [{
+      data: equipmentSeriesData,
+      type: 'bar'
+    }]
+  };
+  equipmentUsageChart.setOption(equipmentOption);
+
+  window.addEventListener('resize', () => {
+    equipmentUsageChart.resize();
+  });
+
+  // Initialize production efficiency chart
+  productionEfficiencyChartRef.value = mockProductionEfficiencyData;
+
+  const productionEfficiencyChart = echarts.init(productionEfficiencyChartContainerRef.value);
+  const efficiencyXAxisData = productionEfficiencyChartRef.value.map(entry => entry.date);
+  const efficiencySeriesData = productionEfficiencyChartRef.value.map(entry => entry.efficiency);
+
+  const efficiencyOption = {
+    color: ['#67C23A'],
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'shadow'
+      }
+    },
+    xAxis: {
+      type: 'category',
+      data: efficiencyXAxisData
+    },
+    yAxis: {
+      type: 'value',
+      minInterval: 1
+    },
+    series: [{
+      data: efficiencySeriesData,
+      type: 'line'
+    }]
+  };
+  productionEfficiencyChart.setOption(efficiencyOption);
+
+  window.addEventListener('resize', () => {
+    productionEfficiencyChart.resize();
+  });
 });
 
 const notices = ref([

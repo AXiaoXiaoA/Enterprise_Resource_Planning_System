@@ -93,25 +93,25 @@
 
         <el-table :data="purchasingOrder.items" border class="custom-table">
           <el-table-column label="原料信息" align="center">
-          <template #default="{row}">
-            <el-table :data="[row.material]" border>
-              <el-table-column label="原料ID">
-                <template #default="{row}">
-                  <span v-if="row.id !== '无'">{{ row.id }}</span><span v-else>无</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="原料名称">
-                <template #default="{row}">
-                  <span v-if="row.name !== '无'">{{ row.name }}</span><span v-else>无</span>
-                </template>
-              </el-table-column>
-              <el-table-column label="原料价格">
-                <template #default="{row}">
-                  <span v-if="row.price !== '无'">{{ row.price }}</span><span v-else>无</span>
-                </template>
-              </el-table-column>
-            </el-table>
-          </template>
+            <template #default="{row}">
+              <el-table :data="[row.material]" border>
+                <el-table-column label="原料ID">
+                  <template #default="{row}">
+                    <span v-if="row.id !== '无'">{{ row.id }}</span><span v-else>无</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="原料名称">
+                  <template #default="{row}">
+                    <span v-if="row.name !== '无'">{{ row.name }}</span><span v-else>无</span>
+                  </template>
+                </el-table-column>
+                <el-table-column label="原料价格">
+                  <template #default="{row}">
+                    <span v-if="row.price !== '无'">{{ row.price }}</span><span v-else>无</span>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </template>
           </el-table-column>
         </el-table>
 
@@ -231,7 +231,7 @@
           <el-button v-if="purchasingOrder.items[0].status === '已入库'"
                      type="success"
                      @click="checkOrder('已完成')"
-                     class="decision-button">完成订单</el-button>
+                     class="decision-button">完成采购单</el-button>
           <el-button v-if="purchasingOrder.items[0].status === '验收不合格'"
                      type="success"
                      @click="checkOrder('等待仓储部验收')"
@@ -251,12 +251,12 @@ import axios from 'axios';
 const columns = [
   { prop: 'id', label: '订单号', align: 'center' },
   { prop: 'materialName', label: '商品名称', align: 'center' },
-  { prop: 'quantity', label: '商品数量(吨)', align: 'center' },
+  { prop: 'quantity', label: '商品数量', align: 'center' },
   { prop: 'companyName', label: '交易公司', align: 'center' },
   { prop: 'departure', label: '出发地', align: 'center' },
   { prop: 'date', label: '订单日期', align: 'center' },
-  { prop: 'purchasingEmployeeName', label: '采购部负责人', align: 'center' },
-  { prop: 'repoEmployeeName', label: '仓储部负责人', align: 'center' },
+  { prop: 'purchasingEmployeeName', label: '采购部员', align: 'center' },
+  { prop: 'repoEmployeeName', label: '仓储部员', align: 'center' },
 ];
 const statusClass = (status) => {
   if (/等待/.test(status)) {
@@ -295,6 +295,7 @@ const loadData = (page = 1) => {
   axios.post('/api/purchasing/searchOrder', searchCriteria)
       .then(response => {
         const res = response.data;
+        console.log(res);
         tableData.items = res.data.map(item => ({
           id: item.id,
           materialName: item.material.name,

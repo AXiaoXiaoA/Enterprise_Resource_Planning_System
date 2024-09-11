@@ -50,7 +50,6 @@
       </div>
       <div class="pagination-box">
         <el-pagination background layout="prev, pager, next" :total="totalItems" :page-size="pageSize" @current-change="handlePageChange"/>
-        <el-button type="primary" @click="exportTable">导出表格</el-button>
       </div>
     </div>
 
@@ -403,25 +402,6 @@ const reset = () => {
   searchCriteria.startDate = '';
   searchCriteria.endDate = '';
   loadData();
-};
-
-// 导出表格
-const exportTable = () => {
-  const items = tableData.items;
-  const headers = columns.map(column => column.label).join(',') + '\n';
-  const rows = items.map(item => columns.map(column => item[column.prop]).join(',')).join('\n');
-  const csvContent = headers + rows;
-
-  const BOM = '\uFEFF';
-  const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  const url = URL.createObjectURL(blob);
-  link.setAttribute('href', url);
-  link.setAttribute('download', 'table_data.csv');
-  link.style.visibility = 'hidden';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
 };
 
 // 分页

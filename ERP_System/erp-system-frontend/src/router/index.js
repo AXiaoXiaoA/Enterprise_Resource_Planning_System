@@ -18,9 +18,6 @@ const router = createRouter({
           path:'/Personnel/Home', name:'personnel_home', component:()=>import('@/views/personnel/Home.vue'),
         },
         {
-          path:'/Personnel/ModelTrain', name:'personnel_modelTrain', component:()=>import('@/views/personnel/ModelTrain.vue'),
-        },
-        {
           path:'/Personnel/ApplyReview', name:'personnel_applyReview', component:()=>import('@/views/personnel/ApplyReview.vue'),
         },
         {

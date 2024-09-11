@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Map;
+
 @RestController
 public class EmployeeController {
     @Autowired
@@ -35,8 +37,8 @@ public class EmployeeController {
     }
 
     @PostMapping("/getPersonalInfo")
-    public Result getPersonInfo(@RequestBody Long id) {
-        System.out.println(id);
+    public Result getPersonInfo(@RequestBody Map<String, Long> request) {
+        Long id = request.get("id");
         Employee employee = employeeService.getPersonalInfo(id);
         if(employee == null){
             return Result.error("获取个人信息失败");

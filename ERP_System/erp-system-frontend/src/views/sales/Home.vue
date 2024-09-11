@@ -17,19 +17,19 @@
           <el-col :span="8">
             <el-card shadow="hover" class="overview-card">
               <h3>总销售额</h3>
-              <p class="overview-number">{{ totalSales }}</p>
+              <p class="overview-number">233</p>
             </el-card>
           </el-col>
           <el-col :span="8">
             <el-card shadow="hover" class="overview-card">
               <h3>本月销售额</h3>
-              <p class="overview-number">{{ monthlySales }}</p>
+              <p class="overview-number">79</p>
             </el-card>
           </el-col>
           <el-col :span="8">
             <el-card shadow="hover" class="overview-card">
               <h3>今日订单</h3>
-              <p class="overview-number">{{ todayOrders }}</p>
+              <p class="overview-number">1</p>
             </el-card>
           </el-col>
         </el-row>
@@ -250,6 +250,59 @@ const attendances = ref([
   { name: '李四', date: '2023-01-04', status: '迟到' },
   { name: '王五', date: '2023-01-04', status: '早退' },
 ]);
+
+onMounted(() => {
+  // 销售额趋势图
+  const salesTrendChart = echarts.init(salesTrendChartContainerRef.value);
+  const salesTrendOption = {
+    xAxis: { type: 'category', data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'] },
+    yAxis: { type: 'value' },
+    series: [{ data: [120, 130, 140, 135, 144, 123, 150], type: 'line' }]
+  };
+  salesTrendChart.setOption(salesTrendOption);
+
+  // 订单分布图
+  const ordersDistributionChart = echarts.init(ordersDistributionChartContainerRef.value);
+  const ordersDistributionOption = {
+    tooltip: { trigger: 'item' },
+    legend: { top: '5%', left: 'center' },
+    series: [
+      {
+        name: '订单来源',
+        type: 'pie',
+        radius: ['40%', '70%'],
+        avoidLabelOverlap: false,
+        itemStyle: {
+          borderRadius: 10,
+          borderColor: '#fff',
+          borderWidth: 2
+        },
+        label: {
+          show: false,
+          position: 'center'
+        },
+        emphasis: {
+          label: {
+            show: true,
+            fontSize: '40',
+            fontWeight: 'bold'
+          }
+        },
+        labelLine: {
+          show: false
+        },
+        data: [
+          { value: 335, name: '' },
+          { value: 310, name: '镀锌钢板' },
+          { value: 234, name: '不锈钢管' },
+          { value: 135, name: '热轧钢卷' },
+          { value: 1548, name: '冷轧钢卷' }
+        ]
+      }
+    ]
+  };
+  ordersDistributionChart.setOption(ordersDistributionOption);
+});
 </script>
 
 <style lang="scss" scoped src="@/styles/home.css"></style>

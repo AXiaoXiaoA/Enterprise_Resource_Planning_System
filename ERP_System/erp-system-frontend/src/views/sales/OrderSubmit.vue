@@ -132,16 +132,17 @@ const beforeUpload = (file) => {
 const handleUploadChange = (file, fileList) => {
   form.contract = fileList;
   if (fileList.length > 0) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      form.contractData = e.target.result;
-    };
-    reader.readAsDataURL(fileList[0].raw);
+    console.log('Uploaded file response:', fileList[0].response);
+    form.contractData = fileList[0].response;
   } else {
     form.contractData = '';
   }
 };
 
+const clearFiles = () => {
+  form.contract = [];
+  form.contractData = '';
+};
 
 // 提交和重置表单
 const formRef = ref(null);
@@ -153,6 +154,7 @@ const submitOrder = () => {
       form.status = '等待部长审批';
     }
     if (valid) {
+      clearFiles();
       axios.post('/api/sales/submitOrder', form)
           .then(response => {
             console.log(response.data);
